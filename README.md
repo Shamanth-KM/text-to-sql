@@ -3,7 +3,6 @@
 
 This project evaluates and compares **CodeLlama** and **Mistral** models for SQL generation from natural language using the **Chinook** and **Spider** databases. It also explores **RAG (Retrieval-Augmented Generation)** and **LoRA fine-tuning** techniques to enhance model performance.
 
----
 
 ## Repository Structure
 
@@ -24,7 +23,7 @@ text-to-sql/
 
 ## How to Run (Google Colab)
 
-> You can run each notebook step-by-step in Colab using the datasets and saved models in Google Drive.
+You can run each notebook step-by-step in Colab using the datasets and saved models in Google Drive.
 
 ### 1. **CodeLlama on Chinook Dataset**
 - `notebooks/CodeLlama_Chinook.ipynb`
@@ -47,13 +46,12 @@ text-to-sql/
   - Run inference on Spider subset
   - Evaluate model responses
 
----
 
 ## Evaluation Metrics
 
 Each generated query is evaluated using:
 - **Exact Match Accuracy** — full string match with the gold SQL.
-- ⚙**Execution Match Accuracy** — same result as the gold query when run on the DB.
+- **Execution Match Accuracy** — same result as the gold query when run on the DB.
 
 Evaluation results are saved in:
 
@@ -65,8 +63,6 @@ text-to-sql/
 |   └── ...
 
 
----
-
 ## Highlights
 
 * Fine-tuned `CodeLlama-7B-Instruct` using LoRA for Chinook SQL generation.
@@ -74,7 +70,6 @@ text-to-sql/
 * Side-by-side evaluation of raw vs RAG vs fine-tuned model outputs.
 * Clean modular scripts and JSON-based experiment tracking.
 
----
 
 ## Future Improvements
 
@@ -82,7 +77,6 @@ text-to-sql/
 * Expand evaluation to full Spider dataset.
 * Experiment with retrieval fine-tuning.
 
----
 
 ## Acknowledgements
 
@@ -114,7 +108,6 @@ Chinook database
   note         = {GitHub repository}
 }
 
----
 
 ## Authors
 
