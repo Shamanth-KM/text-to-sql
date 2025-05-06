@@ -1,0 +1,31 @@
+sql_idx,predicted_sql,ground_truth_sql,tp,fp,fn,precision,recall,f1
+0,SELECT a.Name FROM Artist AS a JOIN Album AS al ON a.ArtistId = al.ArtistId GROUP BY a.Name HAVING COUNT(*) > 10,SELECT ArtistId FROM Album GROUP BY ArtistId HAVING COUNT(AlbumId) > 10;,0,3,3,0.0,0.0,0
+1,"SELECT FirstName, LastName FROM Customer WHERE Country = 'Brazil';","SELECT FirstName, LastName FROM Customer WHERE Country = 'Brazil';",10,0,0,1.0,1.0,1.0
+2,SELECT Name FROM Track WHERE Milliseconds > 5 * 60 * 1000,SELECT Name FROM Track WHERE Milliseconds > 300000;,1069,0,0,1.0,1.0,1.0
+3,"SELECT e.LastName, e.FirstName FROM Employee e WHERE e.Title = 'Sales Manager';","SELECT FirstName, LastName FROM Employee WHERE Title = 'Sales Manager';",2,0,0,1.0,1.0,1.0
+4,SELECT Email FROM Customer WHERE City = 'Paris',SELECT Email FROM Customer WHERE City = 'Paris';,2,0,0,1.0,1.0,1.0
+5,"SELECT c.CustomerName, SUM(il.UnitPrice * il.Quantity) as TotalSpend FROM Customer c JOIN Invoice i ON c.CustomerId = i.CustomerId JOIN InvoiceLine il ON i.InvoiceId = il.InvoiceId GROUP BY c.CustomerId, c.CustomerName ORDER BY TotalSpend DESC;","SELECT CustomerId, SUM(Total) FROM Invoice GROUP BY CustomerId;",0,0,0,0,0,0
+6,"SELECT TOP 5 [Name], [UnitPrice] FROM [Track] ORDER BY [UnitPrice] DESC",SELECT Name FROM Track ORDER BY UnitPrice DESC LIMIT 5;,0,0,0,0,0,0
+7,SELECT [Name] FROM [Track] WHERE [GenreId] = (SELECT [GenreId] FROM [Genre] WHERE [Name] = 'Rock'),SELECT Name FROM Track WHERE GenreId = (SELECT GenreId FROM Genre WHERE Name = 'Rock');,1297,0,0,1.0,1.0,1.0
+8,"SELECT i.BillingCountry, COUNT(*) as InvoiceCount FROM Invoice i GROUP BY i.BillingCountry ORDER BY i.BillingCountry","SELECT BillingCountry, COUNT(*) FROM Invoice GROUP BY BillingCountry;",48,0,0,1.0,1.0,1.0
+9,SELECT Name FROM Artist INNER JOIN Album ON Artist.ArtistId = Album.ArtistId WHERE Title = 'Californication',SELECT Name FROM Artist WHERE ArtistId = (SELECT ArtistId FROM Album WHERE Title = 'Californication');,1,0,0,1.0,1.0,1.0
+10,"SELECT C.FirstName, C.LastName FROM Customer C LEFT JOIN Invoice I ON C.CustomerId = I.CustomerId WHERE I.InvoiceId IS NULL",SELECT CustomerId FROM Customer WHERE CustomerId NOT IN (SELECT CustomerId FROM Invoice);,0,0,0,1.0,1.0,1.0
+11,SELECT COUNT(*) FROM Genre;,SELECT COUNT(*) FROM Genre;,1,0,0,1.0,1.0,1.0
+12,SELECT AVG(Invoice.Total) as AverageInvoiceTotal FROM Invoice;,SELECT AVG(Total) FROM Invoice;,1,0,0,1.0,1.0,1.0
+13,"SELECT LastName, FirstName FROM Employee WHERE ReportsTo = (SELECT EmployeeId FROM Employee WHERE LastName = 'Johnson' AND FirstName = 'Steve')","SELECT FirstName, LastName FROM Employee WHERE ReportsTo = (SELECT EmployeeId FROM Employee WHERE FirstName = 'Steve' AND LastName = 'Johnson');",0,0,0,1.0,1.0,1.0
+14,SELECT Name FROM Track WHERE Composer = 'AC/DC';,SELECT Name FROM Track WHERE Composer = 'AC/DC';,8,0,0,1.0,1.0,1.0
+15,SELECT COUNT(*) FROM Playlist;,SELECT COUNT(*) FROM Playlist;,1,0,0,1.0,1.0,1.0
+16,"SELECT c.FirstName, c.LastName, c.Country, SUM(i.Total) as TotalSpend FROM Customer c JOIN Invoice i ON c.CustomerId = i.CustomerId WHERE Country = 'USA' GROUP BY c.CustomerId, c.FirstName, c.LastName HAVING TotalSpend > 30",SELECT CustomerId FROM Customer WHERE Country = 'USA' AND CustomerId IN (SELECT CustomerId FROM Invoice GROUP BY CustomerId HAVING SUM(Total) > 30);,0,52,13,0.0,0.0,0
+17,"SELECT Tracks.Name AS TrackName, Albums.Title AS AlbumTitle FROM Tracks INNER JOIN Albums ON Tracks.AlbumId = Albums.AlbumId","SELECT t.Name, a.Title FROM Track t JOIN Album a ON t.AlbumId = a.AlbumId;",0,0,0,0,0,0
+18,"SELECT TOP 1 Employee.EmployeeId, Employee.FirstName, Employee.LastName, Employee.HireDate FROM Employee ORDER BY Employee.HireDate DESC","SELECT FirstName, LastName FROM Employee ORDER BY HireDate DESC LIMIT 1;",0,0,0,0,0,0
+19,"SELECT i.InvoiceId, i.Total FROM Invoice i WHERE i.Total > ( SELECT AVG(Total) FROM Invoice )","SELECT InvoiceId, Total FROM Invoice WHERE Total > (SELECT AVG(Total) FROM Invoice);",358,0,0,1.0,1.0,1.0
+20,"SELECT TrackId, Name FROM Track WHERE Name LIKE '%Love%'",SELECT Name FROM Track WHERE Name LIKE '%Love%';,114,114,0,0.5,1.0,0.6666666666666666
+21,"SELECT C.FirstName, C.LastName FROM Customer C INNER JOIN Invoice I ON C.CustomerId = I.CustomerId INNER JOIN InvoiceLine IL ON I.InvoiceId = IL.InvoiceId INNER JOIN Track T ON IL.TrackId = T.TrackId WHERE T.Name LIKE '%Queen%'",SELECT DISTINCT c.CustomerId FROM Customer c JOIN Invoice i ON c.CustomerId = i.CustomerId JOIN InvoiceLine il ON i.InvoiceId = il.InvoiceId JOIN Track t ON il.TrackId = t.TrackId WHERE t.Composer = 'Queen';,0,8,5,0.0,0.0,0
+22,SELECT Name FROM MediaType;,SELECT Name FROM MediaType;,5,0,0,1.0,1.0,1.0
+23,"SELECT City, COUNT(*) as NumCustomers FROM Customer GROUP BY City ORDER BY NumCustomers DESC LIMIT 1;",SELECT City FROM Customer GROUP BY City ORDER BY COUNT(*) DESC LIMIT 1;,1,1,0,0.5,1.0,0.6666666666666666
+24,"SELECT e.LastName, e.FirstName FROM Employee e WHERE e.Title <> 'Manager' ORDER BY e.LastName, e.FirstName;","SELECT FirstName, LastName FROM Employee WHERE ReportsTo IS NOT NULL;",2,13,12,0.13333333333333333,0.14285714285714285,0.1379310344827586
+25,SELECT SUM(CAST(CAST(Milliseconds AS FLOAT)/8640.0 AS INT) AS INT) AS TotalMinutes FROM Track;,SELECT SUM(Milliseconds)/60000.0 FROM Track;,0,0,0,0,0,0
+26,SELECT COUNT(*) FROM Track INNER JOIN PlaylistTrack ON Track.TrackId = PlaylistTrack.TrackId INNER JOIN Playlist ON PlaylistTrack.PlaylistId = Playlist.PlaylistId WHERE Playlist.Name = 'Rock' AND Track.GenreId = (SELECT GenreId FROM Genre WHERE Name = 'Rock'),SELECT COUNT(*) FROM PlaylistTrack WHERE PlaylistId = (SELECT PlaylistId FROM Playlist WHERE Name = 'Rock');,1,0,0,1.0,1.0,1.0
+27,"SELECT Customer.CustomerName FROM Customer INNER JOIN Invoice ON Customer.CustomerId = Invoice.CustomerId GROUP BY Customer.CustomerId, Customer.CustomerName HAVING COUNT(Invoice.InvoiceId) > 2",SELECT CustomerId FROM Invoice GROUP BY CustomerId HAVING COUNT(*) > 2;,0,0,0,0,0,0
+28,SELECT Title FROM Album WHERE AlbumId IN ( SELECT AlbumId FROM Track GROUP BY AlbumId HAVING COUNT(*) > 15 ),SELECT AlbumId FROM Track GROUP BY AlbumId HAVING COUNT(*) > 15;,0,61,61,0.0,0.0,0
+29,SELECT * FROM Customer WHERE City LIKE 'L%',"SELECT FirstName, LastName FROM Customer WHERE City LIKE 'L%';",8,44,0,0.15384615384615385,1.0,0.2666666666666667

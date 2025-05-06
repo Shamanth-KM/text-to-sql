@@ -1,0 +1,31 @@
+db_id,ground_truth_sql,generated_sql,exact_match,execution_match
+chinook,SELECT ArtistId FROM Album GROUP BY ArtistId HAVING COUNT(AlbumId) > 10;,SELECT a.Name FROM Artist AS a JOIN Album AS al ON a.ArtistId = al.ArtistId GROUP BY a.Name HAVING COUNT(*) > 10,False,False
+chinook,"SELECT FirstName, LastName FROM Customer WHERE Country = 'Brazil';","SELECT FirstName, LastName FROM Customer WHERE Country = 'Brazil';",True,True
+chinook,SELECT Name FROM Track WHERE Milliseconds > 300000;,SELECT Name FROM Track WHERE Milliseconds > 5 * 60 * 1000,False,True
+chinook,"SELECT FirstName, LastName FROM Employee WHERE Title = 'Sales Manager';","SELECT e.LastName, e.FirstName FROM Employee e WHERE e.Title = 'Sales Manager';",False,True
+chinook,SELECT Email FROM Customer WHERE City = 'Paris';,SELECT Email FROM Customer WHERE City = 'Paris',True,True
+chinook,"SELECT CustomerId, SUM(Total) FROM Invoice GROUP BY CustomerId;","SELECT c.CustomerName, SUM(il.UnitPrice * il.Quantity) as TotalSpend FROM Customer c JOIN Invoice i ON c.CustomerId = i.CustomerId JOIN InvoiceLine il ON i.InvoiceId = il.InvoiceId GROUP BY c.CustomerId, c.CustomerName ORDER BY TotalSpend DESC;",False,False
+chinook,SELECT Name FROM Track ORDER BY UnitPrice DESC LIMIT 5;,"SELECT TOP 5 [Name], [UnitPrice] FROM [Track] ORDER BY [UnitPrice] DESC",False,False
+chinook,SELECT Name FROM Track WHERE GenreId = (SELECT GenreId FROM Genre WHERE Name = 'Rock');,SELECT [Name] FROM [Track] WHERE [GenreId] = (SELECT [GenreId] FROM [Genre] WHERE [Name] = 'Rock'),False,True
+chinook,"SELECT BillingCountry, COUNT(*) FROM Invoice GROUP BY BillingCountry;","SELECT i.BillingCountry, COUNT(*) as InvoiceCount FROM Invoice i GROUP BY i.BillingCountry ORDER BY i.BillingCountry",False,True
+chinook,SELECT Name FROM Artist WHERE ArtistId = (SELECT ArtistId FROM Album WHERE Title = 'Californication');,SELECT Name FROM Artist INNER JOIN Album ON Artist.ArtistId = Album.ArtistId WHERE Title = 'Californication',False,True
+chinook,SELECT CustomerId FROM Customer WHERE CustomerId NOT IN (SELECT CustomerId FROM Invoice);,"SELECT C.FirstName, C.LastName FROM Customer C LEFT JOIN Invoice I ON C.CustomerId = I.CustomerId WHERE I.InvoiceId IS NULL",False,True
+chinook,SELECT COUNT(*) FROM Genre;,SELECT COUNT(*) FROM Genre;,True,True
+chinook,SELECT AVG(Total) FROM Invoice;,SELECT AVG(Invoice.Total) as AverageInvoiceTotal FROM Invoice;,False,True
+chinook,"SELECT FirstName, LastName FROM Employee WHERE ReportsTo = (SELECT EmployeeId FROM Employee WHERE FirstName = 'Steve' AND LastName = 'Johnson');","SELECT LastName, FirstName FROM Employee WHERE ReportsTo = (SELECT EmployeeId FROM Employee WHERE LastName = 'Johnson' AND FirstName = 'Steve')",False,True
+chinook,SELECT Name FROM Track WHERE Composer = 'AC/DC';,SELECT Name FROM Track WHERE Composer = 'AC/DC';,True,True
+chinook,SELECT COUNT(*) FROM Playlist;,SELECT COUNT(*) FROM Playlist;,True,True
+chinook,SELECT CustomerId FROM Customer WHERE Country = 'USA' AND CustomerId IN (SELECT CustomerId FROM Invoice GROUP BY CustomerId HAVING SUM(Total) > 30);,"SELECT c.FirstName, c.LastName, c.Country, SUM(i.Total) as TotalSpend FROM Customer c JOIN Invoice i ON c.CustomerId = i.CustomerId WHERE Country = 'USA' GROUP BY c.CustomerId, c.FirstName, c.LastName HAVING TotalSpend > 30",False,True
+chinook,"SELECT t.Name, a.Title FROM Track t JOIN Album a ON t.AlbumId = a.AlbumId;","SELECT Tracks.Name AS TrackName, Albums.Title AS AlbumTitle FROM Tracks INNER JOIN Albums ON Tracks.AlbumId = Albums.AlbumId",False,False
+chinook,"SELECT FirstName, LastName FROM Employee ORDER BY HireDate DESC LIMIT 1;","SELECT TOP 1 Employee.EmployeeId, Employee.FirstName, Employee.LastName, Employee.HireDate FROM Employee ORDER BY Employee.HireDate DESC",False,False
+chinook,"SELECT InvoiceId, Total FROM Invoice WHERE Total > (SELECT AVG(Total) FROM Invoice);","SELECT i.InvoiceId, i.Total FROM Invoice i WHERE i.Total > ( SELECT AVG(Total) FROM Invoice )",False,True
+chinook,SELECT Name FROM Track WHERE Name LIKE '%Love%';,"SELECT TrackId, Name FROM Track WHERE Name LIKE '%Love%'",False,False
+chinook,SELECT DISTINCT c.CustomerId FROM Customer c JOIN Invoice i ON c.CustomerId = i.CustomerId JOIN InvoiceLine il ON i.InvoiceId = il.InvoiceId JOIN Track t ON il.TrackId = t.TrackId WHERE t.Composer = 'Queen';,"SELECT C.FirstName, C.LastName FROM Customer C INNER JOIN Invoice I ON C.CustomerId = I.CustomerId INNER JOIN InvoiceLine IL ON I.InvoiceId = IL.InvoiceId INNER JOIN Track T ON IL.TrackId = T.TrackId WHERE T.Name LIKE '%Queen%'",False,False
+chinook,SELECT Name FROM MediaType;,SELECT Name FROM MediaType;,True,True
+chinook,SELECT City FROM Customer GROUP BY City ORDER BY COUNT(*) DESC LIMIT 1;,"SELECT City, COUNT(*) as NumCustomers FROM Customer GROUP BY City ORDER BY NumCustomers DESC LIMIT 1;",False,False
+chinook,"SELECT FirstName, LastName FROM Employee WHERE ReportsTo IS NOT NULL;","SELECT e.LastName, e.FirstName FROM Employee e WHERE e.Title <> 'Manager' ORDER BY e.LastName, e.FirstName;",False,False
+chinook,SELECT SUM(Milliseconds)/60000.0 FROM Track;,SELECT SUM(CAST(CAST(Milliseconds AS FLOAT)/8640.0 AS INT) AS INT) AS TotalMinutes FROM Track;,False,False
+chinook,SELECT COUNT(*) FROM PlaylistTrack WHERE PlaylistId = (SELECT PlaylistId FROM Playlist WHERE Name = 'Rock');,SELECT COUNT(*) FROM Track INNER JOIN PlaylistTrack ON Track.TrackId = PlaylistTrack.TrackId INNER JOIN Playlist ON PlaylistTrack.PlaylistId = Playlist.PlaylistId WHERE Playlist.Name = 'Rock' AND Track.GenreId = (SELECT GenreId FROM Genre WHERE Name = 'Rock'),False,True
+chinook,SELECT CustomerId FROM Invoice GROUP BY CustomerId HAVING COUNT(*) > 2;,"SELECT Customer.CustomerName FROM Customer INNER JOIN Invoice ON Customer.CustomerId = Invoice.CustomerId GROUP BY Customer.CustomerId, Customer.CustomerName HAVING COUNT(Invoice.InvoiceId) > 2",False,False
+chinook,SELECT AlbumId FROM Track GROUP BY AlbumId HAVING COUNT(*) > 15;,SELECT Title FROM Album WHERE AlbumId IN ( SELECT AlbumId FROM Track GROUP BY AlbumId HAVING COUNT(*) > 15 ),False,False
+chinook,"SELECT FirstName, LastName FROM Customer WHERE City LIKE 'L%';",SELECT * FROM Customer WHERE City LIKE 'L%',False,False

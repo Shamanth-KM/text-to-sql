@@ -1,0 +1,358 @@
+[
+    {
+        "question": "What are the names of all albums by AC/DC?",
+        "query": "SELECT Title FROM Album JOIN Artist ON Album.ArtistId = Artist.ArtistId WHERE Artist.Name = 'AC/DC';",
+    },
+    {
+        "question": "Which customers are from Brazil?",
+        "query": "SELECT FirstName, LastName FROM Customer WHERE Country = 'Brazil';",
+    },
+    {
+        "question": "List the top 5 most purchased tracks.",
+        "query": "SELECT Track.Name, COUNT(*) as Purchases FROM InvoiceLine JOIN Track ON InvoiceLine.TrackId = Track.TrackId GROUP BY Track.Name ORDER BY Purchases DESC LIMIT 5;",
+    },
+    {
+        "question": "How many invoices were created in the year 2012?",
+        "query": "SELECT COUNT(*) FROM Invoice WHERE InvoiceDate LIKE '2012%';",
+    },
+    {
+        "question": "Which employees are sales agents?",
+        "query": "SELECT FirstName, LastName FROM Employee WHERE Title = 'Sales Support Agent';",
+    },
+    {
+        "question": "Show the total sales per country.",
+        "query": "SELECT BillingCountry, SUM(Total) as TotalSales FROM Invoice GROUP BY BillingCountry ORDER BY TotalSales DESC;",
+    },
+    {
+        "question": "List all unique genres in the database.",
+        "query": "SELECT DISTINCT Name FROM Genre;",
+    },
+    {
+        "question": "Find the names and emails of customers who have made purchases over $20.",
+        "query": "SELECT DISTINCT Customer.FirstName, Customer.LastName, Customer.Email FROM Customer JOIN Invoice ON Customer.CustomerId = Invoice.CustomerId WHERE Invoice.Total > 20;",
+    },
+    {
+        "question": "Which employee reports to Andrew Adams?",
+        "query": "SELECT FirstName, LastName FROM Employee WHERE ReportsTo = (SELECT EmployeeId FROM Employee WHERE FirstName = 'Andrew' AND LastName = 'Adams');",
+    },
+    {
+        "question": "How many different cities are our customers from?",
+        "query": "SELECT COUNT(DISTINCT City) FROM Customer;",
+    },
+    {
+        "question": "Which customer made the highest invoice total?",
+        "query": "SELECT Customer.FirstName, Customer.LastName, MAX(Invoice.Total) FROM Customer JOIN Invoice ON Customer.CustomerId = Invoice.CustomerId;",
+    },
+    {
+        "question": "Show the number of invoices per customer.",
+        "query": "SELECT CustomerId, COUNT(*) as InvoiceCount FROM Invoice GROUP BY CustomerId;",
+    },
+    {
+        "question": "List employees who are managers.",
+        "query": "SELECT FirstName, LastName FROM Employee WHERE Title LIKE '%Manager%';",
+    },
+    {
+        "question": "Which invoices were billed to customers in Canada?",
+        "query": "SELECT InvoiceId, BillingCity FROM Invoice WHERE BillingCountry = 'Canada';",
+    },
+    {
+        "question": "Which customers live in cities that start with 'P'?",
+        "query": "SELECT FirstName, LastName, City FROM Customer WHERE City LIKE 'P%';",
+    },
+    {
+        "question": "What is the total sales value for each billing city?",
+        "query": "SELECT BillingCity, SUM(Total) FROM Invoice GROUP BY BillingCity;",
+    },
+    {
+        "question": "Find the most common billing country.",
+        "query": "SELECT BillingCountry, COUNT(*) as InvoiceCount FROM Invoice GROUP BY BillingCountry ORDER BY InvoiceCount DESC LIMIT 1;",
+    },
+    {
+        "question": "Show the customers who have not made any purchases.",
+        "query": "SELECT FirstName, LastName FROM Customer WHERE CustomerId NOT IN (SELECT CustomerId FROM Invoice);",
+    },
+    {
+        "question": "Which tracks are longer than 5 minutes?",
+        "query": "SELECT Name FROM Track WHERE Milliseconds > 300000;",
+    },
+    {
+        "question": "How many invoices have a total between $10 and $15?",
+        "query": "SELECT COUNT(*) FROM Invoice WHERE Total BETWEEN 10 AND 15;",
+    },
+    {
+        "question": "List the email addresses of customers who live in Paris.",
+        "query": "SELECT Email FROM Customer WHERE City = 'Paris';",
+    },
+    {
+        "question": "Find all customers whose last name starts with 'S'.",
+        "query": "SELECT FirstName, LastName FROM Customer WHERE LastName LIKE 'S%';",
+    },
+    {
+        "question": "List all albums with more than 10 tracks.",
+        "query": "SELECT Album.Title FROM Album JOIN Track ON Album.AlbumId = Track.AlbumId GROUP BY Album.Title HAVING COUNT(Track.TrackId) > 10;",
+    },
+    {
+        "question": "Get the top 3 countries by number of customers.",
+        "query": "SELECT Country, COUNT(*) as Count FROM Customer GROUP BY Country ORDER BY Count DESC LIMIT 3;",
+    },
+    {
+        "question": "Show the artist names who have more than 5 albums.",
+        "query": "SELECT Artist.Name FROM Artist JOIN Album ON Artist.ArtistId = Album.ArtistId GROUP BY Artist.Name HAVING COUNT(Album.AlbumId) > 5;",
+    },
+    {
+        "question": "How many employees do we have per city?",
+        "query": "SELECT City, COUNT(*) as EmployeeCount FROM Employee GROUP BY City;",
+    },
+    {
+        "question": "Which customers are from Germany and have a Gmail email address?",
+        "query": "SELECT FirstName, LastName FROM Customer WHERE Country = 'Germany' AND Email LIKE '%@gmail.com';",
+    },
+    {
+        "question": "What are the names of all tracks in the 'Rock' genre?",
+        "query": "SELECT Track.Name FROM Track JOIN Genre ON Track.GenreId = Genre.GenreId WHERE Genre.Name = 'Rock';",
+    },
+    {
+        "question": "Find tracks that cost more than $0.99.",
+        "query": "SELECT Name, UnitPrice FROM Track WHERE UnitPrice > 0.99;",
+    },
+    {
+        "question": "List the number of tracks per album.",
+        "query": "SELECT AlbumId, COUNT(*) as TrackCount FROM Track GROUP BY AlbumId;",
+    },
+    {
+        "question": "Show the customers who bought tracks composed by 'AC/DC'.",
+        "query": "SELECT DISTINCT Customer.FirstName, Customer.LastName FROM Customer JOIN Invoice ON Customer.CustomerId = Invoice.CustomerId JOIN InvoiceLine ON Invoice.InvoiceId = InvoiceLine.InvoiceId JOIN Track ON InvoiceLine.TrackId = Track.TrackId JOIN Album ON Track.AlbumId = Album.AlbumId JOIN Artist ON Album.ArtistId = Artist.ArtistId WHERE Artist.Name = 'AC/DC';",
+    },
+    {
+        "question": "Get the average invoice total.",
+        "query": "SELECT AVG(Total) FROM Invoice;",
+    },
+    {
+        "question": "What is the longest track in the database?",
+        "query": "SELECT Name FROM Track ORDER BY Milliseconds DESC LIMIT 1;",
+    },
+    {
+        "question": "List all employees who do not report to anyone.",
+        "query": "SELECT FirstName, LastName FROM Employee WHERE ReportsTo IS NULL;",
+    },
+    {
+        "question": "What is the total duration of all tracks in seconds?",
+        "query": "SELECT SUM(Milliseconds) / 1000 as TotalSeconds FROM Track;",
+    },
+    {
+        "question": "How many genres have more than 50 tracks?",
+        "query": "SELECT COUNT(*) FROM (SELECT GenreId FROM Track GROUP BY GenreId HAVING COUNT(*) > 50);",
+    },
+    {
+        "question": "List the customers who have made more than 3 invoices.",
+        "query": "SELECT Customer.FirstName, Customer.LastName FROM Customer JOIN Invoice ON Customer.CustomerId = Invoice.CustomerId GROUP BY Customer.CustomerId HAVING COUNT(Invoice.InvoiceId) > 3;",
+    },
+    {
+        "question": "Which tracks belong to playlists named 'Grunge'?",
+        "query": "SELECT Track.Name FROM Track JOIN PlaylistTrack ON Track.TrackId = PlaylistTrack.TrackId JOIN Playlist ON PlaylistTrack.PlaylistId = Playlist.PlaylistId WHERE Playlist.Name = 'Grunge';",
+    },
+    {
+        "question": "Show employees who are based in Canada.",
+        "query": "SELECT FirstName, LastName FROM Employee WHERE Country = 'Canada';",
+    },
+    {
+        "question": "List all playlists and the number of tracks in each.",
+        "query": "SELECT Playlist.Name, COUNT(PlaylistTrack.TrackId) as TrackCount FROM Playlist JOIN PlaylistTrack ON Playlist.PlaylistId = PlaylistTrack.PlaylistId GROUP BY Playlist.Name;",
+    },
+    {
+        "question": "Which artist has the most albums?",
+        "query": "SELECT Artist.Name FROM Artist JOIN Album ON Artist.ArtistId = Album.ArtistId GROUP BY Artist.Name ORDER BY COUNT(Album.AlbumId) DESC LIMIT 1;",
+    },
+    {
+        "question": "Find the most expensive track.",
+        "query": "SELECT Name, UnitPrice FROM Track ORDER BY UnitPrice DESC LIMIT 1;",
+    },
+    {
+        "question": "What is the average price of a track?",
+        "query": "SELECT AVG(UnitPrice) FROM Track;",
+    },
+    {
+        "question": "List invoices made in August 2011.",
+        "query": "SELECT * FROM Invoice WHERE InvoiceDate LIKE '2011-08%';",
+    },
+    {
+        "question": "Show all tracks that include 'love' in the name.",
+        "query": "SELECT Name FROM Track WHERE Name LIKE '%love%';",
+    },
+    {
+        "question": "How many customers are from each country?",
+        "query": "SELECT Country, COUNT(*) FROM Customer GROUP BY Country;",
+    },
+    {
+        "question": "Find customers who live in both Paris and Berlin.",
+        "query": "SELECT FirstName, LastName, City FROM Customer WHERE City IN ('Paris', 'Berlin');",
+    },
+    {
+        "question": "Which employees report to a manager named 'Steve'?",
+        "query": "SELECT e.FirstName, e.LastName FROM Employee e JOIN Employee m ON e.ReportsTo = m.EmployeeId WHERE m.FirstName = 'Steve';",
+    },
+    {
+        "question": "Which customers have purchased tracks in the 'Jazz' genre?",
+        "query": "SELECT DISTINCT Customer.FirstName, Customer.LastName FROM Customer JOIN Invoice ON Customer.CustomerId = Invoice.CustomerId JOIN InvoiceLine ON Invoice.InvoiceId = InvoiceLine.InvoiceId JOIN Track ON InvoiceLine.TrackId = Track.TrackId JOIN Genre ON Track.GenreId = Genre.GenreId WHERE Genre.Name = 'Jazz';",
+    },
+    {
+        "question": "Find the country with the highest number of customers.",
+        "query": "SELECT Country FROM Customer GROUP BY Country ORDER BY COUNT(*) DESC LIMIT 1;",
+    },
+    {
+        "question": "List the invoice dates with total amount over $30.",
+        "query": "SELECT InvoiceDate FROM Invoice WHERE Total > 30;",
+    },
+    {
+        "question": "How many tracks are there in each media type?",
+        "query": "SELECT MediaTypeId, COUNT(*) FROM Track GROUP BY MediaTypeId;",
+    },
+    {
+        "question": "Which genres have an average track length over 4 minutes?",
+        "query": "SELECT Genre.Name FROM Genre JOIN Track ON Genre.GenreId = Track.GenreId GROUP BY Genre.Name HAVING AVG(Track.Milliseconds) > 240000;",
+    },
+    {
+        "question": "List the top 3 customers who spent the most money.",
+        "query": "SELECT Customer.FirstName, Customer.LastName, SUM(Invoice.Total) as TotalSpent FROM Customer JOIN Invoice ON Customer.CustomerId = Invoice.CustomerId GROUP BY Customer.CustomerId ORDER BY TotalSpent DESC LIMIT 3;",
+    },
+    {
+        "question": "Which artists have more than 20 tracks in the database?",
+        "query": "SELECT Artist.Name FROM Artist JOIN Album ON Artist.ArtistId = Album.ArtistId JOIN Track ON Album.AlbumId = Track.AlbumId GROUP BY Artist.Name HAVING COUNT(Track.TrackId) > 20;",
+    },
+    {
+        "question": "What are the 10 most recently created invoices?",
+        "query": "SELECT * FROM Invoice ORDER BY InvoiceDate DESC LIMIT 10;",
+    },
+    {
+        "question": "Find tracks with names that include the word 'baby'.",
+        "query": "SELECT Name FROM Track WHERE Name LIKE '%baby%';",
+    },
+    {
+        "question": "Which employees are located in the USA?",
+        "query": "SELECT FirstName, LastName FROM Employee WHERE Country = 'USA';",
+    },
+    {
+        "question": "Find playlists that have less than 10 tracks.",
+        "query": "SELECT Playlist.Name FROM Playlist JOIN PlaylistTrack ON Playlist.PlaylistId = PlaylistTrack.PlaylistId GROUP BY Playlist.Name HAVING COUNT(PlaylistTrack.TrackId) < 10;",
+    },
+    {
+        "question": "Which albums have tracks with the highest average unit price?",
+        "query": "SELECT Album.Title FROM Album JOIN Track ON Album.AlbumId = Track.AlbumId GROUP BY Album.AlbumId ORDER BY AVG(Track.UnitPrice) DESC LIMIT 5;",
+    },
+    {
+        "question": "Get the details of the longest invoice item.",
+        "query": "SELECT * FROM InvoiceLine ORDER BY Quantity DESC LIMIT 1;",
+    },
+    {
+        "question": "List the tracks that are not in any playlist.",
+        "query": "SELECT Name FROM Track WHERE TrackId NOT IN (SELECT TrackId FROM PlaylistTrack);",
+    },
+    {
+        "question": "Find customers who have more than one invoice from the same country.",
+        "query": "SELECT CustomerId, COUNT(*) as InvoiceCount FROM Invoice GROUP BY CustomerId, BillingCountry HAVING InvoiceCount > 1;",
+    },
+    {
+        "question": "Which invoices were billed in cities starting with 'L'?",
+        "query": "SELECT InvoiceId FROM Invoice WHERE BillingCity LIKE 'L%';",
+    },
+    {
+        "question": "Which genres have more than 100 tracks?",
+        "query": "SELECT Genre.Name FROM Genre JOIN Track ON Genre.GenreId = Track.GenreId GROUP BY Genre.GenreId HAVING COUNT(*) > 100;",
+    },
+    {
+        "question": "Show the invoices with the lowest totals.",
+        "query": "SELECT * FROM Invoice ORDER BY Total ASC LIMIT 5;",
+    },
+    {
+        "question": "List employees along with their managers\u2019 names.",
+        "query": "SELECT e.FirstName, e.LastName, m.FirstName as ManagerFirst, m.LastName as ManagerLast FROM Employee e LEFT JOIN Employee m ON e.ReportsTo = m.EmployeeId;",
+    },
+    {
+        "question": "Get all albums that contain the word 'Greatest'.",
+        "query": "SELECT Title FROM Album WHERE Title LIKE '%Greatest%';",
+    },
+    {
+        "question": "Which customers have purchased from more than 2 different billing cities?",
+        "query": "SELECT Customer.FirstName, Customer.LastName FROM Customer JOIN Invoice ON Customer.CustomerId = Invoice.CustomerId GROUP BY Customer.CustomerId HAVING COUNT(DISTINCT Invoice.BillingCity) > 2;",
+    },
+    {
+        "question": "Find the top 3 invoice totals and the customer names.",
+        "query": "SELECT Customer.FirstName, Customer.LastName, Invoice.Total FROM Invoice JOIN Customer ON Invoice.CustomerId = Customer.CustomerId ORDER BY Invoice.Total DESC LIMIT 3;",
+    },
+    {
+        "question": "Which artists have albums but no tracks?",
+        "query": "SELECT Artist.Name FROM Artist LEFT JOIN Album ON Artist.ArtistId = Album.ArtistId LEFT JOIN Track ON Album.AlbumId = Track.AlbumId WHERE Track.TrackId IS NULL;",
+    },
+    {
+        "question": "Show total number of invoice items per billing country.",
+        "query": "SELECT Invoice.BillingCountry, COUNT(InvoiceLine.InvoiceLineId) as ItemCount FROM Invoice JOIN InvoiceLine ON Invoice.InvoiceId = InvoiceLine.InvoiceId GROUP BY Invoice.BillingCountry;",
+    },
+    {
+        "question": "Which tracks appear in the most playlists?",
+        "query": "SELECT Track.Name, COUNT(PlaylistTrack.PlaylistId) as PlaylistCount FROM Track JOIN PlaylistTrack ON Track.TrackId = PlaylistTrack.TrackId GROUP BY Track.Name ORDER BY PlaylistCount DESC LIMIT 5;",
+    },
+    {
+        "question": "How many customers have the same phone number prefix?",
+        "query": "SELECT SUBSTR(Phone, 1, 3) as Prefix, COUNT(*) FROM Customer GROUP BY Prefix HAVING COUNT(*) > 1;",
+    },
+    {
+        "question": "Get the total revenue by invoice month.",
+        "query": "SELECT SUBSTR(InvoiceDate, 1, 7) as Month, SUM(Total) FROM Invoice GROUP BY Month ORDER BY Month;",
+    },
+    {
+        "question": "Find the customers with the same support rep.",
+        "query": "SELECT SupportRepId, COUNT(*) as Count FROM Customer GROUP BY SupportRepId HAVING Count > 1;",
+    },
+    {
+        "question": "Which employees are responsible for customers from Germany?",
+        "query": "SELECT DISTINCT e.FirstName, e.LastName FROM Employee e JOIN Customer c ON e.EmployeeId = c.SupportRepId WHERE c.Country = 'Germany';",
+    },
+    {
+        "question": "What is the average number of tracks per playlist?",
+        "query": "SELECT AVG(TrackCount) FROM (SELECT PlaylistId, COUNT(*) as TrackCount FROM PlaylistTrack GROUP BY PlaylistId);",
+    },
+    {
+        "question": "Find all invoices that include exactly 3 items.",
+        "query": "SELECT InvoiceId FROM InvoiceLine GROUP BY InvoiceId HAVING COUNT(*) = 3;",
+    },
+    {
+        "question": "Which countries have more than 5 customers?",
+        "query": "SELECT Country FROM Customer GROUP BY Country HAVING COUNT(*) > 5;",
+    },
+    {
+        "question": "Which customers have an invoice average above $25?",
+        "query": "SELECT Customer.FirstName, Customer.LastName FROM Customer JOIN Invoice ON Customer.CustomerId = Invoice.CustomerId GROUP BY Customer.CustomerId HAVING AVG(Invoice.Total) > 25;",
+    },
+    {
+        "question": "Which tracks have more than 2 media types?",
+        "query": "SELECT Track.Name FROM Track GROUP BY Track.Name HAVING COUNT(DISTINCT MediaTypeId) > 2;",
+    },
+    {
+        "question": "Find customers with first names that end in 'a'.",
+        "query": "SELECT FirstName, LastName FROM Customer WHERE FirstName LIKE '%a';",
+    },
+    {
+        "question": "Which artists have albums with no associated tracks?",
+        "query": "SELECT DISTINCT Artist.Name FROM Artist JOIN Album ON Artist.ArtistId = Album.ArtistId LEFT JOIN Track ON Album.AlbumId = Track.AlbumId WHERE Track.TrackId IS NULL;",
+
+    },
+    {
+        "question": "Show tracks that were purchased more than 10 times.",
+        "query": "SELECT Track.Name FROM InvoiceLine JOIN Track ON InvoiceLine.TrackId = Track.TrackId GROUP BY Track.TrackId HAVING COUNT(*) > 10;",
+
+    },
+    {
+        "question": "Which invoices have more than $40 in total and less than 5 items?",
+        "query": "SELECT Invoice.InvoiceId FROM Invoice JOIN InvoiceLine ON Invoice.InvoiceId = InvoiceLine.InvoiceId GROUP BY Invoice.InvoiceId HAVING SUM(Invoice.Total) > 40 AND COUNT(InvoiceLine.InvoiceLineId) < 5;",
+
+    },
+    {
+        "question": "Find the number of albums per artist.",
+        "query": "SELECT Artist.Name, COUNT(Album.AlbumId) as AlbumCount FROM Artist JOIN Album ON Artist.ArtistId = Album.ArtistId GROUP BY Artist.ArtistId;",
+
+    },
+    {
+        "question": "List all customers who purchased Jazz tracks and live in Canada.",
+        "query": "SELECT DISTINCT Customer.FirstName, Customer.LastName FROM Customer JOIN Invoice ON Customer.CustomerId = Invoice.CustomerId JOIN InvoiceLine ON Invoice.InvoiceId = InvoiceLine.InvoiceId JOIN Track ON InvoiceLine.TrackId = Track.TrackId JOIN Genre ON Track.GenreId = Genre.GenreId WHERE Genre.Name = 'Jazz' AND Customer.Country = 'Canada';",
+    }
+]
