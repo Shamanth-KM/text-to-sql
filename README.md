@@ -7,7 +7,6 @@ This project evaluates and compares **CodeLlama** and **Mistral** models for SQL
 
 ## Repository Structure
 
-```
 
 text-to-sql/
 ├── datasets/                   
@@ -22,9 +21,6 @@ text-to-sql/
 ├── requirements_cleaned.txt        
 └── README.md
 
-```
-
----
 
 ## How to Run (Google Colab)
 
@@ -60,16 +56,13 @@ Each generated query is evaluated using:
 - ⚙**Execution Match Accuracy** — same result as the gold query when run on the DB.
 
 Evaluation results are saved in:
-```
+
 
 text-to-sql/
 ├── results/
 │   ├── mistral_rag_spider_evaluation_results.csv
 |   ├── chinook_eval_results_finetuned.json
 |   └── ...
-
-````
-
 
 
 ---
