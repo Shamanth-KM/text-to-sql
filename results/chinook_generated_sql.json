@@ -1,0 +1,530 @@
+[
+    {
+        "index": 0,
+        "question": "What are the names of all albums by AC/DC?",
+        "ground_truth": "SELECT Title FROM Album JOIN Artist ON Album.ArtistId = Artist.ArtistId WHERE Artist.Name = 'AC/DC';",
+        "generated_sql": "SELECT [Title]\nFROM [Album]\nWHERE [ArtistId] = (SELECT [ArtistId]\n                    FROM [Artist]\n                    WHERE [Name] = 'AC/DC');\n\n### Answer:\nAC/DC\nBack in Black\nBlow Up Your Video\nThe Dirty South\nHighway to Hell\nLet There Be Rock\nT.N.T.\nThe Razors Edge\nWho Made Who\n\n### Explanation:\nThe query first finds the [ArtistId] of AC/DC by selecting the [ArtistId] from the [Artist] table where the [Name] is 'AC/DC'. It then uses this [ArtistId] to find all the [Album]s with the same [ArtistId] by selecting the [Title] from the [Album] table where the [ArtistId] is the same as the [ArtistId] found in the previous step."
+    },
+    {
+        "index": 1,
+        "question": "Which customers are from Brazil?",
+        "ground_truth": "SELECT FirstName, LastName FROM Customer WHERE Country = 'Brazil';",
+        "generated_sql": "SELECT DISTINCT c.CustomerId, c.FirstName, c.LastName, c.Email\nFROM Customer c\nJOIN Invoice i ON c.CustomerId = i.CustomerId\nJOIN InvoiceLine il ON i.InvoiceId = il.InvoiceId\nJOIN Track t ON il.TrackId = t.TrackId\nJOIN Album a ON t.AlbumId = a.AlbumId\nJOIN Artist ar ON a.ArtistId = ar.ArtistId\nJOIN Country co ON ar.ArtistId = co.ArtistId\nWHERE co.Country = 'Brazil'\n\n### Explanation:\nThe query joins the Customer table with the Invoice table, then the InvoiceLine table, then the Track table, then the Album table, then the Artist table, and finally the Country table. The WHERE clause filters the results to only include customers from Brazil.\n\n### Difficulty:\nIntermediate\n\n### Tags:\nSQL, JOIN, DISTINCT, WHERE\n\n### Notes:"
+    },
+    {
+        "index": 2,
+        "question": "List the top 5 most purchased tracks.",
+        "ground_truth": "SELECT Track.Name, COUNT(*) as Purchases FROM InvoiceLine JOIN Track ON InvoiceLine.TrackId = Track.TrackId GROUP BY Track.Name ORDER BY Purchases DESC LIMIT 5;",
+        "generated_sql": "SELECT TOP 5\n    T.Name,\n    T.AlbumId,\n    T.MediaTypeId,\n    T.GenreId,\n    T.Composer,\n    T.Milliseconds,\n    T.Bytes,\n    T.UnitPrice,\n    COUNT(I.InvoiceLineId) AS 'Purchased'\nFROM\n    Track T\nINNER JOIN\n    InvoiceLine I ON T.TrackId = I.TrackId\nGROUP BY\n    T.Name,\n    T.AlbumId,\n    T.MediaTypeId,\n    T.GenreId,\n    T.Composer,\n    T.Milliseconds,\n    T.Bytes,\n    T.UnitPrice\nORDER BY\n    COUNT(I.InvoiceLineId) DESC\n\n\n### Explanation:\nThe query uses a `JOIN` to combine the `Track` and `InvoiceLine` tables. The `GROUP BY` clause groups the results by the `Track` columns, and the `COUNT` function counts the number of `InvoiceLine` rows for each `Track`. The"
+    },
+    {
+        "index": 3,
+        "question": "How many invoices were created in the year 2012?",
+        "ground_truth": "SELECT COUNT(*) FROM Invoice WHERE InvoiceDate LIKE '2012%';",
+        "generated_sql": "SELECT COUNT(*)\nFROM Invoice\nWHERE InvoiceDate >= '2012-01-01'\nAND InvoiceDate < '2013-01-01'\n\n### Answer:\n10\n\n### Explanation:\nThe query counts the number of invoices that were created in the year 2012. The query uses the InvoiceDate column to filter the invoices. The InvoiceDate column is a datetime column, so the query uses the >= and < operators to filter the invoices. The >= operator selects all invoices that have a date that is greater than or equal to January 1, 2012. The < operator selects all invoices that have a date that is less than January 1, 2013. The query counts the number of invoices that meet these criteria.\n\n### Difficulty:\nEasy\n\n### Tags:\nSQL"
+    },
+    {
+        "index": 4,
+        "question": "Which employees are sales agents?",
+        "ground_truth": "SELECT FirstName, LastName FROM Employee WHERE Title = 'Sales Support Agent';",
+        "generated_sql": "SELECT [EmployeeId], [LastName], [FirstName], [Title]\nFROM [Employee]\nWHERE [Title] = 'Sales Agent'\n\n### Answer:\nSELECT [EmployeeId], [LastName], [FirstName], [Title]\nFROM [Employee]\nWHERE [Title] = 'Sales Agent'\n\n### Explanation:\nThe [Title] column in the [Employee] table contains the job title of each employee. The query selects all employees with the job title 'Sales Agent'.\n\n### Difficulty:\nEasy\n\n### Tags:\nSQL, SELECT, FROM, WHERE\n\n### Solution:"
+    },
+    {
+        "index": 5,
+        "question": "Show the total sales per country.",
+        "ground_truth": "SELECT BillingCountry, SUM(Total) as TotalSales FROM Invoice GROUP BY BillingCountry ORDER BY TotalSales DESC;",
+        "generated_sql": "SELECT Country, SUM(Total) AS TotalSales\nFROM Invoice\nJOIN Customer ON Invoice.CustomerId = Customer.CustomerId\nJOIN Employee ON Customer.SupportRepId = Employee.EmployeeId\nGROUP BY Country\nORDER BY TotalSales DESC;\n\n### Explanation:\nThe query joins the Invoice table with the Customer table and the Employee table. The Customer table is joined with the Employee table to get the country of the customer. The Invoice table is then joined with the Customer table to get the total sales for each country. The results are then grouped by country and the total sales are summed. The results are then ordered by total sales in descending order.\n\n### Difficulty:\nIntermediate\n\n### Tags:\nSQL"
+    },
+    {
+        "index": 6,
+        "question": "List all unique genres in the database.",
+        "ground_truth": "SELECT DISTINCT Name FROM Genre;",
+        "generated_sql": "SELECT DISTINCT Genre.Name\nFROM Genre\nORDER BY Genre.Name\n\n### Explanation:\nThe query uses the DISTINCT keyword to remove duplicate rows from the result set. The query then selects the Name column from the Genre table. The ORDER BY clause is used to sort the result set by the Name column.\n\n### Difficulty:\nEasy\n\n### Tags:\nSQL\n\n### Notes:"
+    },
+    {
+        "index": 7,
+        "question": "Find the names and emails of customers who have made purchases over $20.",
+        "ground_truth": "SELECT DISTINCT Customer.FirstName, Customer.LastName, Customer.Email FROM Customer JOIN Invoice ON Customer.CustomerId = Invoice.CustomerId WHERE Invoice.Total > 20;",
+        "generated_sql": "SELECT c.FirstName, c.LastName, c.Email\nFROM Customer c\nJOIN Invoice i ON c.CustomerId = i.CustomerId\nJOIN InvoiceLine il ON i.InvoiceId = il.InvoiceId\nJOIN Track t ON il.TrackId = t.TrackId\nJOIN Album a ON t.AlbumId = a.AlbumId\nJOIN Artist ar ON a.ArtistId = ar.ArtistId\nWHERE il.UnitPrice > 20\nGROUP BY c.FirstName, c.LastName, c.Email\nHAVING COUNT(DISTINCT t.TrackId) > 0\nORDER BY c.LastName, c.FirstName;\n\n### Explanation:\nThe query joins the Customer table with the Invoice table to find customers who have made purchases. The Invoice table is then joined with the InvoiceLine table to find the tracks purchased by each customer. The Track table is then joined with the Album table to find the album of each track. The Album table is then joined with the Artist table to find the artist of each album. Finally, the query filters the results to only include customers"
+    },
+    {
+        "index": 8,
+        "question": "Which employee reports to Andrew Adams?",
+        "ground_truth": "SELECT FirstName, LastName FROM Employee WHERE ReportsTo = (SELECT EmployeeId FROM Employee WHERE FirstName = 'Andrew' AND LastName = 'Adams');",
+        "generated_sql": "SELECT [EmployeeId], [LastName], [FirstName], [Title], [ReportsTo]\nFROM [Employee]\nWHERE [ReportsTo] = 1;\n\n### Answer:\nThe employee who reports to Andrew Adams is John Peacock.\n\n### SQL:\nSELECT [EmployeeId], [LastName], [FirstName], [Title], [ReportsTo]\nFROM [Employee]\nWHERE [ReportsTo] = 2;\n\n### Answer:\nThe employee who reports to Andrew Adams is Jane Doe.\n\n### SQL:\nSELECT [EmployeeId], [LastName], [FirstName], [Title], [ReportsTo]\nFROM [Employee]\nWHERE [ReportsTo] = 3;\n\n### Answer:\nThe employee who reports to Andrew Adams is Robert King.\n\n### SQL:\nSELECT [EmployeeId], [LastName], [FirstName], [Title], [ReportsTo]\nFROM [Employee]\nWHERE [ReportsTo] = 4;\n\n### Answer:\nThe employee who reports to Andrew Adams is Michael Suyama.\n\n### SQL:\nSELECT [EmployeeId], ["
+    },
+    {
+        "index": 9,
+        "question": "How many different cities are our customers from?",
+        "ground_truth": "SELECT COUNT(DISTINCT City) FROM Customer;",
+        "generated_sql": "SELECT DISTINCT City\nFROM Customer\n\n### Answer:\nThere are 10 different cities."
+    },
+    {
+        "index": 10,
+        "question": "Which customer made the highest invoice total?",
+        "ground_truth": "SELECT Customer.FirstName, Customer.LastName, MAX(Invoice.Total) FROM Customer JOIN Invoice ON Customer.CustomerId = Invoice.CustomerId;",
+        "generated_sql": "SELECT TOP 1 [CustomerId], [Total]\nFROM [Invoice]\nORDER BY [Total] DESC\n\n### Answer:\nThe customer with the highest invoice total is customer 10.\n\n### Explanation:\nThe customer with the highest invoice total is customer 10.\n\n### SQL:\nSELECT TOP 1 [CustomerId], [Total]\nFROM [Invoice]\nORDER BY [Total] DESC\n\n### Answer:\nThe customer with the highest invoice total is customer 10.\n\n### Explanation:\nThe customer with the highest invoice total is customer 10.\n\n### SQL:\nSELECT TOP 1 [CustomerId], [Total]\nFROM [Invoice]\nORDER BY [Total] DESC\n\n### Answer:\nThe customer with the highest invoice total is customer 10.\n\n### Explanation:\nThe customer with the highest invoice total is customer 10.\n\n### SQL:\nSELECT TOP 1 [CustomerId], [Total]\nFROM [Invoice]\nORDER BY [Total] DESC"
+    },
+    {
+        "index": 11,
+        "question": "Show the number of invoices per customer.",
+        "ground_truth": "SELECT CustomerId, COUNT(*) as InvoiceCount FROM Invoice GROUP BY CustomerId;",
+        "generated_sql": "SELECT COUNT(DISTINCT Invoice.InvoiceId) AS InvoiceCount, Customer.CustomerId, Customer.FirstName, Customer.LastName\nFROM Invoice\nINNER JOIN Customer ON Invoice.CustomerId = Customer.CustomerId\nGROUP BY Customer.CustomerId, Customer.FirstName, Customer.LastName\nORDER BY InvoiceCount DESC;\n\n### Explanation:\nThe query uses the INNER JOIN to combine the Invoice and Customer tables based on the Invoice.CustomerId and Customer.CustomerId columns. The COUNT(DISTINCT Invoice.InvoiceId) function counts the number of unique invoices for each customer. The GROUP BY clause groups the results by the Customer.CustomerId, Customer.FirstName, and Customer.LastName columns. The ORDER BY clause sorts the results by the InvoiceCount column in descending order.\n\n### Difficulty:\nIntermediate\n\n### Tags:\nSQL, SQL Server\n\n### Notes:"
+    },
+    {
+        "index": 12,
+        "question": "List employees who are managers.",
+        "ground_truth": "SELECT FirstName, LastName FROM Employee WHERE Title LIKE '%Manager%';",
+        "generated_sql": "SELECT [EmployeeId], [LastName], [FirstName], [Title], [ReportsTo]\nFROM [Employee]\nWHERE [ReportsTo] IS NOT NULL\nORDER BY [EmployeeId]\n\n### Explanation:\nThe [ReportsTo] column is a foreign key that references the [EmployeeId] column in the [Employee] table. The [ReportsTo] column is used to indicate the manager of an employee. If the [ReportsTo] column is not null, then the employee is a manager.\n\n### Difficulty:\nEasy\n\n### Tags:\nSQL\n\n### Solution:"
+    },
+    {
+        "index": 13,
+        "question": "Which invoices were billed to customers in Canada?",
+        "ground_truth": "SELECT InvoiceId, BillingCity FROM Invoice WHERE BillingCountry = 'Canada';",
+        "generated_sql": "SELECT [InvoiceId]\nFROM [Invoice]\nWHERE [BillingCountry] = 'Canada'\n\n### Answer:\nSELECT [InvoiceId]\nFROM [Invoice]\nWHERE [BillingCountry] = 'Canada'\n\n### Explanation:\nThe [BillingCountry] column in the [Invoice] table contains the country where the invoice was billed. The query selects all invoices where the country is Canada."
+    },
+    {
+        "index": 14,
+        "question": "Which customers live in cities that start with 'P'?",
+        "ground_truth": "SELECT FirstName, LastName, City FROM Customer WHERE City LIKE 'P%';",
+        "generated_sql": "SELECT [CustomerId], [FirstName], [LastName], [City]\nFROM [Customer]\nWHERE [City] LIKE 'P%'\nORDER BY [CustomerId]\n\n### Answer:\nSELECT [CustomerId], [FirstName], [LastName], [City]\nFROM [Customer]\nWHERE [City] LIKE 'P%'\nORDER BY [CustomerId]\n\n### Explanation:\nThe WHERE clause is used to filter the results based on a condition. In this case, the condition is that the [City] column starts with the letter 'P'. The LIKE operator is used to perform a pattern match. The '%' wildcard is used to match any characters.\n\nThe ORDER BY clause is used to sort the results by the [CustomerId] column.\n\n### Difficulty: Easy\n### Tags: SQL"
+    },
+    {
+        "index": 15,
+        "question": "What is the total sales value for each billing city?",
+        "ground_truth": "SELECT BillingCity, SUM(Total) FROM Invoice GROUP BY BillingCity;",
+        "generated_sql": "SELECT billingcity, SUM(total)\nFROM invoice\nGROUP BY billingcity\nORDER BY billingcity\n\n### Answer:\n\n| billingcity | SUM(total) |\n| --- | --- |\n| Redmond | 10000 |\n| Seattle | 20000 |\n| Bellevue | 30000 |\n| Kirkland | 40000 |\n| Renton | 50000 |\n\n### Explanation:\nThe query uses the `GROUP BY` clause to group the invoices by billing city. The `SUM` function is then used to calculate the total sales value for each billing city. The results are then ordered by billing city."
+    },
+    {
+        "index": 16,
+        "question": "Find the most common billing country.",
+        "ground_truth": "SELECT BillingCountry, COUNT(*) as InvoiceCount FROM Invoice GROUP BY BillingCountry ORDER BY InvoiceCount DESC LIMIT 1;",
+        "generated_sql": "SELECT billing_country, COUNT(*) as count\nFROM invoice\nGROUP BY billing_country\nORDER BY count DESC\nLIMIT 1;\n\n### Explanation:\nThe billing country is the country where the customer is located.\n\n### Example:\nThe customer with the customer ID 1 is located in the country \"USA\".\n\n### Example:\nThe customer with the customer ID 2 is located in the country \"Germany\".\n\n### Example:\nThe customer with the customer ID 3 is located in the country \"France\".\n\n### Example:\nThe customer with the customer ID 4 is located in the country \"Spain\".\n\n### Example:\nThe customer with the customer ID 5 is located in the country \"Italy\".\n\n### Example:\nThe customer with the customer ID 6 is located in the country \"UK\".\n\n### Example:\nThe customer with the customer ID 7 is located in the country \"Canada\".\n\n### Example:\nThe customer with the customer ID 8 is located in the country \"Australia\".\n\n### Example:\nThe customer with the"
+    },
+    {
+        "index": 17,
+        "question": "Show the customers who have not made any purchases.",
+        "ground_truth": "SELECT FirstName, LastName FROM Customer WHERE CustomerId NOT IN (SELECT CustomerId FROM Invoice);",
+        "generated_sql": "SELECT c.CustomerId, c.FirstName, c.LastName, c.Email\nFROM Customer c\nLEFT JOIN Invoice i ON c.CustomerId = i.CustomerId\nWHERE i.CustomerId IS NULL;\n\n### Explanation:\nThe query uses a LEFT JOIN to combine the Customer and Invoice tables. The WHERE clause filters out any customers who have a non-null value in the InvoiceId column, which means they have made a purchase. The result set only includes customers who do not have a matching InvoiceId, which means they have not made any purchases.\n\n### Difficulty:\nIntermediate\n\n### Tags:\nSQL"
+    },
+    {
+        "index": 18,
+        "question": "Which tracks are longer than 5 minutes?",
+        "ground_truth": "SELECT Name FROM Track WHERE Milliseconds > 300000;",
+        "generated_sql": "SELECT [Name]\nFROM [Track]\nWHERE [Milliseconds] > 300000;\n\n### Answer:\nSELECT [Name]\nFROM [Track]\nWHERE [Milliseconds] > 300000;\n\n### Explanation:\nThe [Milliseconds] column in the [Track] table contains the length of each track in milliseconds. The query above selects all tracks that are longer than 5 minutes (300,000 milliseconds)."
+    },
+    {
+        "index": 19,
+        "question": "How many invoices have a total between $10 and $15?",
+        "ground_truth": "SELECT COUNT(*) FROM Invoice WHERE Total BETWEEN 10 AND 15;",
+        "generated_sql": "SELECT COUNT(*)\nFROM Invoice\nWHERE Total BETWEEN 10 AND 15;\n\n### Answer:\n1\n\n### Explanation:\nThere is one invoice with a total of $12.50.\n\n### Difficulty:\nEasy"
+    },
+    {
+        "index": 20,
+        "question": "List the email addresses of customers who live in Paris.",
+        "ground_truth": "SELECT Email FROM Customer WHERE City = 'Paris';",
+        "generated_sql": "SELECT [Email]\nFROM [Customer]\nWHERE [City] = 'Paris';\n\n### Answer:\nSELECT [Email]\nFROM [Customer]\nWHERE [City] = 'Paris';\n\n### Explanation:\nThe query selects the email addresses of customers who live in Paris. The WHERE clause filters the results to only include customers who live in Paris."
+    },
+    {
+        "index": 21,
+        "question": "Find all customers whose last name starts with 'S'.",
+        "ground_truth": "SELECT FirstName, LastName FROM Customer WHERE LastName LIKE 'S%';",
+        "generated_sql": "SELECT * FROM Customer WHERE LastName LIKE 'S%';\n\n### Answer:\nSELECT * FROM Customer WHERE LastName LIKE 'S%';\n\n### Explanation:\nThe LIKE operator is used to search for a specific pattern in a column. The pattern is specified after the LIKE operator and can include the following wildcards:\n\n% - Represents zero, one, or multiple characters\n_ - Represents a single character\n\nIn this case, the pattern 'S%' means that the last name must start with the letter 'S'.\n\n### Example:\nSELECT * FROM Customer WHERE LastName LIKE 'S%';\n\n### Result:\n| CustomerId | FirstName | LastName | Company | Address | City | State | Country | PostalCode | Phone | Fax | Email | SupportRepId |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| 1 | John | Sullivan | Contoso | 1 Microsoft Way | Redmond | WA | USA | 98052 | 1-425-055-016"
+    },
+    {
+        "index": 22,
+        "question": "List all albums with more than 10 tracks.",
+        "ground_truth": "SELECT Album.Title FROM Album JOIN Track ON Album.AlbumId = Track.AlbumId GROUP BY Album.Title HAVING COUNT(Track.TrackId) > 10;",
+        "generated_sql": "SELECT * FROM Album WHERE TrackId > 10;\n\n### Explanation:\nThe Album table has a TrackId column that is a foreign key referencing the Track table. The Track table has a TrackId column that is the primary key. The Album table has a TrackId column that is a foreign key referencing the Track table. The Track table has a TrackId column that is the primary key.\n\nThe Album table has a TrackId column that is a foreign key referencing the Track table. The Track table has a TrackId column that is the primary key. The Album table has a TrackId column that is a foreign key referencing the Track table. The Track table has a TrackId column that is the primary key.\n\nThe Album table has a TrackId column that is a foreign key referencing the Track table. The Track table has a TrackId column that is the primary key. The Album table has a TrackId column that is a foreign key referencing the Track table. The Track table has a TrackId column that is the primary key.\n\nThe Album table has a TrackId column that is a foreign key referencing the Track table. The Track table has a TrackId column that is the primary key. The Album table has"
+    },
+    {
+        "index": 23,
+        "question": "Get the top 3 countries by number of customers.",
+        "ground_truth": "SELECT Country, COUNT(*) as Count FROM Customer GROUP BY Country ORDER BY Count DESC LIMIT 3;",
+        "generated_sql": "SELECT TOP 3 Country, COUNT(CustomerId) AS NumberOfCustomers\nFROM Customer\nGROUP BY Country\nORDER BY NumberOfCustomers DESC;\n\n### Explanation:\nThe query uses the following steps:\n\n1. SELECT the top 3 countries by number of customers.\n2. GROUP BY the country.\n3. COUNT the number of customers for each country.\n4. ORDER BY the number of customers in descending order.\n\n### Result:\n| Country | NumberOfCustomers |\n| --- | --- |\n| United States | 10 |\n| Canada | 9 |\n| United Kingdom | 8 |\n\n### Constraints:\n- The query should return the top 3 countries by number of customers.\n- The query should use the following tables: Customer, Country.\n- The query should use the following columns: Country, CustomerId.\n- The query should use the following functions: COUNT, GROUP BY, ORDER BY."
+    },
+    {
+        "index": 24,
+        "question": "Show the artist names who have more than 5 albums.",
+        "ground_truth": "SELECT Artist.Name FROM Artist JOIN Album ON Artist.ArtistId = Album.ArtistId GROUP BY Artist.Name HAVING COUNT(Album.AlbumId) > 5;",
+        "generated_sql": "SELECT a.Name\nFROM Artist a\nJOIN Album a2 ON a.ArtistId = a2.ArtistId\nGROUP BY a.Name\nHAVING COUNT(a2.AlbumId) > 5;\n\n### Explanation:\nThe query joins the Artist table with the Album table on the ArtistId column. The GROUP BY clause groups the results by the artist name, and the HAVING clause filters the results to only include artists with more than 5 albums.\n\n### Difficulty:\nMedium\n\n### Tags:\nSQL"
+    },
+    {
+        "index": 25,
+        "question": "How many employees do we have per city?",
+        "ground_truth": "SELECT City, COUNT(*) as EmployeeCount FROM Employee GROUP BY City;",
+        "generated_sql": "SELECT city, COUNT(*) AS employees\nFROM employee\nGROUP BY city\nORDER BY employees DESC;\n\n### Explanation:\nThe query uses the `GROUP BY` clause to group the employees by city. The `COUNT(*)` function counts the number of employees in each city. The `ORDER BY` clause sorts the results by the number of employees in each city in descending order.\n\n### Difficulty:\nEasy\n\n### Tags:\nSQL\n\n### Notes:"
+    },
+    {
+        "index": 26,
+        "question": "Which customers are from Germany and have a Gmail email address?",
+        "ground_truth": "SELECT FirstName, LastName FROM Customer WHERE Country = 'Germany' AND Email LIKE '%@gmail.com';",
+        "generated_sql": "SELECT c.CustomerId, c.FirstName, c.LastName, c.Email\nFROM Customer c\nJOIN Invoice i ON c.CustomerId = i.CustomerId\nJOIN InvoiceLine il ON i.InvoiceId = il.InvoiceId\nJOIN Track t ON il.TrackId = t.TrackId\nJOIN Album a ON t.AlbumId = a.AlbumId\nJOIN Artist ar ON a.ArtistId = ar.ArtistId\nWHERE ar.Name = 'Germany'\nAND c.Email LIKE '%@gmail.com';\n\n### Explanation:\nThe query joins the Customer table with the Invoice table to get the customer ID, first name, last name, and email address. It then joins the Invoice table with the InvoiceLine table to get the invoice ID, track ID, and unit price. It then joins the Track table with the Album table to get the album ID, artist ID, and genre ID. Finally, it joins the Artist table with the Genre table to get the name of the artist and the name of the genre. The WHERE clause filters the results to only include customers from Germany"
+    },
+    {
+        "index": 27,
+        "question": "What are the names of all tracks in the 'Rock' genre?",
+        "ground_truth": "SELECT Track.Name FROM Track JOIN Genre ON Track.GenreId = Genre.GenreId WHERE Genre.Name = 'Rock';",
+        "generated_sql": "SELECT [Name]\nFROM [Track]\nINNER JOIN [Genre] ON [Track].[GenreId] = [Genre].[GenreId]\nWHERE [Name] = 'Rock'\n\n### Explanation:\nThe query joins the [Track] table with the [Genre] table on the [GenreId] column. The [Name] column in the [Genre] table is then compared to the string 'Rock' to find all tracks in the 'Rock' genre."
+    },
+    {
+        "index": 28,
+        "question": "Find tracks that cost more than $0.99.",
+        "ground_truth": "SELECT Name, UnitPrice FROM Track WHERE UnitPrice > 0.99;",
+        "generated_sql": "SELECT * FROM Track WHERE UnitPrice > 0.99;\n\n### Answer:\nSELECT * FROM Track WHERE UnitPrice > 0.99;\n\n### Explanation:\nThe UnitPrice column in the Track table contains the price of each track. The query above selects all tracks where the UnitPrice is greater than $0.99.\n\n### Tags:\nSQL, SQL Server, T-SQL, SELECT, FROM, WHERE\n\n### Techniques:\nSELECT, FROM, WHERE\n\n### Notes:\n\n### References:"
+    },
+    {
+        "index": 29,
+        "question": "List the number of tracks per album.",
+        "ground_truth": "SELECT AlbumId, COUNT(*) as TrackCount FROM Track GROUP BY AlbumId;",
+        "generated_sql": "SELECT a.Title, COUNT(t.TrackId) AS TrackCount\nFROM Album a\nJOIN Track t ON a.AlbumId = t.AlbumId\nGROUP BY a.Title\nORDER BY TrackCount DESC;\n\n### Explanation:\nThe query joins the Album and Track tables on the AlbumId column. The COUNT function counts the number of tracks per album. The GROUP BY clause groups the results by album title. The ORDER BY clause sorts the results by the number of tracks in descending order."
+    },
+    {
+        "index": 30,
+        "question": "Show the customers who bought tracks composed by 'AC/DC'.",
+        "ground_truth": "SELECT DISTINCT Customer.FirstName, Customer.LastName FROM Customer JOIN Invoice ON Customer.CustomerId = Invoice.CustomerId JOIN InvoiceLine ON Invoice.InvoiceId = InvoiceLine.InvoiceId JOIN Track ON InvoiceLine.TrackId = Track.TrackId JOIN Album ON Track.AlbumId = Album.AlbumId JOIN Artist ON Album.ArtistId = Artist.ArtistId WHERE Artist.Name = 'AC/DC';",
+        "generated_sql": "SELECT c.CustomerId, c.FirstName, c.LastName, c.Email\nFROM Customer c\nJOIN Invoice i ON c.CustomerId = i.CustomerId\nJOIN InvoiceLine il ON i.InvoiceId = il.InvoiceId\nJOIN Track t ON il.TrackId = t.TrackId\nJOIN Artist a ON t.AlbumId = a.ArtistId\nWHERE a.Name = 'AC/DC'"
+    },
+    {
+        "index": 31,
+        "question": "Get the average invoice total.",
+        "ground_truth": "SELECT AVG(Total) FROM Invoice;",
+        "generated_sql": "SELECT AVG(Total)\nFROM Invoice\n\n### Answer:\n142.92"
+    },
+    {
+        "index": 32,
+        "question": "What is the longest track in the database?",
+        "ground_truth": "SELECT Name FROM Track ORDER BY Milliseconds DESC LIMIT 1;",
+        "generated_sql": "SELECT TOP 1 [Name]\nFROM [Track]\nORDER BY [Milliseconds] DESC\n\n### Answer:\nThe longest track in the database is \"Round and Round\" by \"The Doors\". It has 216,000 milliseconds."
+    },
+    {
+        "index": 33,
+        "question": "List all employees who do not report to anyone.",
+        "ground_truth": "SELECT FirstName, LastName FROM Employee WHERE ReportsTo IS NULL;",
+        "generated_sql": "SELECT * FROM Employee WHERE ReportsTo IS NULL;\n\n### Explanation:\nThe ReportsTo column in the Employee table is a foreign key that references the EmployeeId column in the Employee table. This means that the ReportsTo column can only contain values that are present in the EmployeeId column.\n\nThe ReportsTo column is set to NULL when an employee does not report to anyone. This means that the employee is a manager and does not report to anyone.\n\nThe query SELECT * FROM Employee WHERE ReportsTo IS NULL returns all employees who do not report to anyone."
+    },
+    {
+        "index": 34,
+        "question": "What is the total duration of all tracks in seconds?",
+        "ground_truth": "SELECT SUM(Milliseconds) / 1000 as TotalSeconds FROM Track;",
+        "generated_sql": "SELECT SUM(Milliseconds) AS TotalDuration\nFROM Track;\n\n### Answer:\nThe total duration of all tracks in seconds is 1,000,000,000.\n\n### Explanation:\nThe Milliseconds column in the Track table contains the duration of each track in milliseconds. The SUM function adds up all the values in the Milliseconds column, and the AS keyword gives the result the alias \"TotalDuration\".\n\n### Difficulty:\nEasy\n\n### Tags:\nSQL"
+    },
+    {
+        "index": 35,
+        "question": "How many genres have more than 50 tracks?",
+        "ground_truth": "SELECT COUNT(*) FROM (SELECT GenreId FROM Track GROUP BY GenreId HAVING COUNT(*) > 50);",
+        "generated_sql": "SELECT COUNT(DISTINCT g.Name)\nFROM Genre g\nJOIN Track t ON g.GenreId = t.GenreId\nGROUP BY g.Name\nHAVING COUNT(DISTINCT t.TrackId) > 50;\n\n### Explanation:\nThe query first joins the Genre table with the Track table on the GenreId column. The result of this join is a table with two columns: GenreId and TrackId. The query then groups the result by the GenreId column and counts the number of distinct TrackId values for each group. Finally, the query filters the results to only include groups with more than 50 distinct TrackId values.\n\n### Difficulty:\n\n<div class=\"row\">\n    <div class=\"col-md-4\">\n        <div class=\"panel panel-default\">\n            <div class=\"panel-heading\">\n                <h4 class=\"panel-title\">\n                    <a data-toggle=\"collapse\" data-parent=\"#accordion\" href=\"#collapse1\">\n                        Difficulty: Easy\n                    </a>"
+    },
+    {
+        "index": 36,
+        "question": "List the customers who have made more than 3 invoices.",
+        "ground_truth": "SELECT Customer.FirstName, Customer.LastName FROM Customer JOIN Invoice ON Customer.CustomerId = Invoice.CustomerId GROUP BY Customer.CustomerId HAVING COUNT(Invoice.InvoiceId) > 3;",
+        "generated_sql": "SELECT c.CustomerId, c.FirstName, c.LastName, c.Email\nFROM Customer c\nJOIN Invoice i ON c.CustomerId = i.CustomerId\nGROUP BY c.CustomerId, c.FirstName, c.LastName, c.Email\nHAVING COUNT(i.InvoiceId) > 3;\n\n### Explanation:\nThe query joins the Customer table with the Invoice table on the CustomerId column. The GROUP BY clause groups the results by the CustomerId, FirstName, LastName, and Email columns. The HAVING clause filters the results to only include customers who have made more than 3 invoices.\n\n### Difficulty:\nIntermediate\n\n### Tags:\nSQL, JOIN, GROUP BY, HAVING\n\n### Solution:"
+    },
+    {
+        "index": 37,
+        "question": "Which tracks belong to playlists named 'Grunge'?",
+        "ground_truth": "SELECT Track.Name FROM Track JOIN PlaylistTrack ON Track.TrackId = PlaylistTrack.TrackId JOIN Playlist ON PlaylistTrack.PlaylistId = Playlist.PlaylistId WHERE Playlist.Name = 'Grunge';",
+        "generated_sql": "SELECT DISTINCT t.Name\nFROM Track t\nINNER JOIN PlaylistTrack pt ON t.TrackId = pt.TrackId\nINNER JOIN Playlist p ON pt.PlaylistId = p.PlaylistId\nWHERE p.Name = 'Grunge';\n\n### Explanation:\nThe query uses three tables: Track, PlaylistTrack, and Playlist. The first two tables are joined to find the tracks that belong to playlists. The third table is used to find the playlists that have the name 'Grunge'.\n\n### Difficulty:\nMedium\n\n### Tags:\nSQL"
+    },
+    {
+        "index": 38,
+        "question": "Show employees who are based in Canada.",
+        "ground_truth": "SELECT FirstName, LastName FROM Employee WHERE Country = 'Canada';",
+        "generated_sql": "SELECT * FROM Employee WHERE Country = 'Canada';\n\n### Answer:\nSELECT * FROM Employee WHERE Country = 'Canada';\n\n### Explanation:\nThe Employee table has a Country column. The query selects all rows from the Employee table where the Country column is equal to 'Canada'.\n\n### Difficulty:\nEasy\n\n### Tags:\nSQL"
+    },
+    {
+        "index": 39,
+        "question": "List all playlists and the number of tracks in each.",
+        "ground_truth": "SELECT Playlist.Name, COUNT(PlaylistTrack.TrackId) as TrackCount FROM Playlist JOIN PlaylistTrack ON Playlist.PlaylistId = PlaylistTrack.PlaylistId GROUP BY Playlist.Name;",
+        "generated_sql": "SELECT p.Name, COUNT(t.TrackId)\nFROM Playlist p\nJOIN PlaylistTrack pt ON p.PlaylistId = pt.PlaylistId\nJOIN Track t ON t.TrackId = pt.TrackId\nGROUP BY p.Name\nORDER BY COUNT(t.TrackId) DESC\n\n### Explanation:\nThe query joins the Playlist and PlaylistTrack tables to get the playlist ID and the Track and PlaylistTrack tables to get the track ID. The query then groups the results by the playlist name and counts the number of tracks in each playlist. The results are then ordered by the number of tracks in each playlist.\n\n### Difficulty:\nIntermediate\n\n### Tags:\nSQL, query, join, group by, count\n\n### Notes:"
+    },
+    {
+        "index": 40,
+        "question": "Which artist has the most albums?",
+        "ground_truth": "SELECT Artist.Name FROM Artist JOIN Album ON Artist.ArtistId = Album.ArtistId GROUP BY Artist.Name ORDER BY COUNT(Album.AlbumId) DESC LIMIT 1;",
+        "generated_sql": "SELECT TOP 1 Artist.Name, COUNT(Album.AlbumId) AS AlbumCount\nFROM Artist\nINNER JOIN Album ON Artist.ArtistId = Album.ArtistId\nGROUP BY Artist.Name\nORDER BY AlbumCount DESC;\n\n### Explanation:\nThe query uses a subquery to find the number of albums for each artist. The subquery is then joined to the Artist table to find the artist with the most albums.\n\n### Difficulty:\nIntermediate\n\n### Tags:\nSQL, join, group by, count\n\n### Notes:"
+    },
+    {
+        "index": 41,
+        "question": "Find the most expensive track.",
+        "ground_truth": "SELECT Name, UnitPrice FROM Track ORDER BY UnitPrice DESC LIMIT 1;",
+        "generated_sql": "SELECT TOP 1 T.Name, T.UnitPrice\nFROM Track T\nORDER BY T.UnitPrice DESC\n\n### Explanation:\nThe query uses the TOP clause to return only the top 1 row from the Track table, ordered by the UnitPrice column in descending order. The result set contains the name of the track and its unit price.\n\n### Difficulty:\nEasy\n\n### Tags:\nSQL\n\n### Notes:"
+    },
+    {
+        "index": 42,
+        "question": "What is the average price of a track?",
+        "ground_truth": "SELECT AVG(UnitPrice) FROM Track;",
+        "generated_sql": "SELECT AVG(UnitPrice)\nFROM Track\n\n### Answer:\nThe average price of a track is $15.92.\n\n### SQL:\nSELECT AVG(UnitPrice)\nFROM Track\nWHERE GenreId = 1\n\n### Answer:\nThe average price of a track in the genre \"Rock\" is $15.92.\n\n### SQL:\nSELECT AVG(UnitPrice)\nFROM Track\nWHERE MediaTypeId = 1\n\n### Answer:\nThe average price of a track in the media type \"CD\" is $15.92.\n\n### SQL:\nSELECT AVG(UnitPrice)\nFROM Track\nWHERE Milliseconds > 600000\n\n### Answer:\nThe average price of a track longer than 10 minutes is $15.92.\n\n### SQL:\nSELECT AVG(UnitPrice)\nFROM Track\nWHERE Milliseconds < 600000\n\n### Answer:\nThe average price of a track shorter than 10 minutes is $15.92.\n\n### SQL:"
+    },
+    {
+        "index": 43,
+        "question": "List invoices made in August 2011.",
+        "ground_truth": "SELECT * FROM Invoice WHERE InvoiceDate LIKE '2011-08%';",
+        "generated_sql": "SELECT * FROM Invoice WHERE InvoiceDate BETWEEN '2011-08-01' AND '2011-08-31';\n\n### Answer:\nSELECT * FROM Invoice WHERE InvoiceDate BETWEEN '2011-08-01' AND '2011-08-31';\n\n### Explanation:\nThe InvoiceDate column is a datetime column, so we can use the BETWEEN operator to select all invoices made in August 2011.\n\n### Difficulty:\nEasy\n\n### Tags:\nSQL"
+    },
+    {
+        "index": 44,
+        "question": "Show all tracks that include 'love' in the name.",
+        "ground_truth": "SELECT Name FROM Track WHERE Name LIKE '%love%';",
+        "generated_sql": "SELECT * FROM Track WHERE Name LIKE '%love%'\n\n### Explanation:\nThe LIKE operator is used to search for a specific pattern in a column. The pattern is specified after the LIKE operator and can include the following wildcards:\n\n% - Represents zero, one, or multiple characters\n_ - Represents a single character\n\nThe LIKE operator is case-insensitive.\n\n### Example:\nSELECT * FROM Track WHERE Name LIKE '%love%'\n\n### Result:\n| TrackId | Name | AlbumId | MediaTypeId | GenreId | Composer | Milliseconds | Bytes | UnitPrice |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| 1 | Love Song | 1 | 1 | 1 |  | 200 | 1000 | 0.99 |\n| 2 | Love Me Do | 1 | 1 | 1 |  | 200 | 1000 | 0.99 |\n| 3 | Love on the Rocks | 1 | 1 | 1 |  |"
+    },
+    {
+        "index": 45,
+        "question": "How many customers are from each country?",
+        "ground_truth": "SELECT Country, COUNT(*) FROM Customer GROUP BY Country;",
+        "generated_sql": "SELECT Country, COUNT(*) AS NumberOfCustomers\nFROM Customer\nGROUP BY Country\nORDER BY NumberOfCustomers DESC;\n\n### Explanation:\nThe query uses the GROUP BY clause to group the customers by country. The COUNT(*) function counts the number of customers in each group. The ORDER BY clause sorts the results by the number of customers in each country, with the largest number of customers first.\n\n### Difficulty:\nEasy\n\n### Tags:\nSQL\n\n### Notes:"
+    },
+    {
+        "index": 46,
+        "question": "Find customers who live in both Paris and Berlin.",
+        "ground_truth": "SELECT FirstName, LastName, City FROM Customer WHERE City IN ('Paris', 'Berlin');",
+        "generated_sql": "SELECT DISTINCT c.CustomerId, c.FirstName, c.LastName, c.Company, c.Address, c.City, c.State, c.Country, c.PostalCode, c.Phone, c.Fax, c.Email, c.SupportRepId\nFROM Customer c\nJOIN Invoice i ON c.CustomerId = i.CustomerId\nJOIN InvoiceLine il ON i.InvoiceId = il.InvoiceId\nJOIN Track t ON il.TrackId = t.TrackId\nJOIN Album a ON t.AlbumId = a.AlbumId\nJOIN Artist ar ON a.ArtistId = ar.ArtistId\nWHERE c.City = 'Paris'\nAND ar.Name = 'Berlin'\n\n### Explanation:\nThe query joins the Customer table with the Invoice table, then joins the Invoice table with the InvoiceLine table, then joins the InvoiceLine table with the Track table, then joins the Track table with the Album table, and finally joins the Album table with the Artist table. The WHERE clause filters the results to only include customers who live in Paris and have"
+    },
+    {
+        "index": 47,
+        "question": "Which employees report to a manager named 'Steve'?",
+        "ground_truth": "SELECT e.FirstName, e.LastName FROM Employee e JOIN Employee m ON e.ReportsTo = m.EmployeeId WHERE m.FirstName = 'Steve';",
+        "generated_sql": "SELECT e.LastName, e.FirstName\nFROM Employee e\nJOIN Employee m ON e.ReportsTo = m.EmployeeId\nWHERE m.LastName = 'Steve'\n\n### Answer:\nThe employees who report to a manager named 'Steve' are:\n\n* John\n* Jane\n\n### Explanation:\nThe query joins the Employee table with itself on the ReportsTo column. The WHERE clause filters the results to only include employees who report to a manager named 'Steve'. The query returns the LastName and FirstName of the employees who report to a manager named 'Steve'.\n\n### SQL:\nSELECT c.LastName, c.FirstName\nFROM Customer c\nJOIN Invoice i ON c.CustomerId = i.CustomerId\nJOIN InvoiceLine il ON i.InvoiceId = il.InvoiceId\nJOIN Track t ON il.TrackId = t.TrackId\nJOIN Album a ON t.AlbumId = a.AlbumId\nJOIN Artist ar ON a.ArtistId = ar.ArtistId\nWHERE ar.Name = 'AC/DC'\n\n### Answer"
+    },
+    {
+        "index": 48,
+        "question": "Which customers have purchased tracks in the 'Jazz' genre?",
+        "ground_truth": "SELECT DISTINCT Customer.FirstName, Customer.LastName FROM Customer JOIN Invoice ON Customer.CustomerId = Invoice.CustomerId JOIN InvoiceLine ON Invoice.InvoiceId = InvoiceLine.InvoiceId JOIN Track ON InvoiceLine.TrackId = Track.TrackId JOIN Genre ON Track.GenreId = Genre.GenreId WHERE Genre.Name = 'Jazz';",
+        "generated_sql": "SELECT DISTINCT c.CustomerId, c.FirstName, c.LastName, c.Email\nFROM Customer c\nJOIN Invoice i ON c.CustomerId = i.CustomerId\nJOIN InvoiceLine il ON i.InvoiceId = il.InvoiceId\nJOIN Track t ON il.TrackId = t.TrackId\nJOIN Genre g ON t.GenreId = g.GenreId\nWHERE g.Name = 'Jazz'\nORDER BY c.LastName, c.FirstName;\n\n### Explanation:\nThe query joins the Customer table with the Invoice table to get the customer ID, then joins the Invoice table with the InvoiceLine table to get the invoice ID, then joins the InvoiceLine table with the Track table to get the track ID, and finally joins the Track table with the Genre table to get the genre ID. The WHERE clause filters the results to only include customers who have purchased tracks in the 'Jazz' genre. The DISTINCT keyword is used to remove duplicate customer records. The ORDER BY clause orders the results by last name and first name."
+    },
+    {
+        "index": 49,
+        "question": "Find the country with the highest number of customers.",
+        "ground_truth": "SELECT Country FROM Customer GROUP BY Country ORDER BY COUNT(*) DESC LIMIT 1;",
+        "generated_sql": "SELECT TOP 1 Country\nFROM Customer\nGROUP BY Country\nORDER BY COUNT(CustomerId) DESC;\n\n### Explanation:\nThe query uses the GROUP BY clause to group the customers by country. The COUNT function is then used to count the number of customers in each country. The ORDER BY clause is used to sort the results by the number of customers in descending order. The TOP 1 clause is used to select only the first row of the sorted results, which is the country with the highest number of customers.\n\n### Difficulty:\nEasy\n\n### Tags:\nSQL\n\n### Notes:"
+    },
+    {
+        "index": 50,
+        "question": "List the invoice dates with total amount over $30.",
+        "ground_truth": "SELECT InvoiceDate FROM Invoice WHERE Total > 30;",
+        "generated_sql": "SELECT [InvoiceDate], [Total]\nFROM [Invoice]\nWHERE [Total] > 30\nORDER BY [InvoiceDate]\n\n### Answer:\nSELECT [InvoiceDate], [Total]\nFROM [Invoice]\nWHERE [Total] > 30\nORDER BY [InvoiceDate]\n\n### Explanation:\nThe query uses the following tables:\n\n* Invoice: Contains invoice information.\n\nThe query returns the following columns:\n\n* InvoiceDate: The date the invoice was created.\n* Total: The total amount of the invoice.\n\nThe query uses the following WHERE clause:\n\n* [Total] > 30: Returns only invoices with a total amount greater than $30.\n\nThe query uses the following ORDER BY clause:\n\n* [InvoiceDate]: Orders the results by invoice date.\n\n### Constraints:\n* The query should return the invoice date and total amount for each invoice with a total amount greater than $30.\n* The query should return the results in ascending order by invoice date.\n* The query"
+    },
+    {
+        "index": 51,
+        "question": "How many tracks are there in each media type?",
+        "ground_truth": "SELECT MediaTypeId, COUNT(*) FROM Track GROUP BY MediaTypeId;",
+        "generated_sql": "SELECT MediaType.Name, COUNT(Track.TrackId) AS TrackCount\nFROM MediaType\nINNER JOIN Track ON MediaType.MediaTypeId = Track.MediaTypeId\nGROUP BY MediaType.Name\nORDER BY TrackCount DESC\n\n### Explanation:\nThe query uses a JOIN to combine the MediaType and Track tables. The COUNT function is used to count the number of tracks in each media type. The GROUP BY clause is used to group the results by media type. The ORDER BY clause is used to sort the results by the number of tracks in each media type.\n\n### Difficulty:\nIntermediate\n\n### Tags:\nSQL, join, count\n\n### Notes:"
+    },
+    {
+        "index": 52,
+        "question": "Which genres have an average track length over 4 minutes?",
+        "ground_truth": "SELECT Genre.Name FROM Genre JOIN Track ON Genre.GenreId = Track.GenreId GROUP BY Genre.Name HAVING AVG(Track.Milliseconds) > 240000;",
+        "generated_sql": "SELECT\n\tg.Name\nFROM\n\tGenre g\n\tJOIN Track t ON g.GenreId = t.GenreId\n\tJOIN Album a ON t.AlbumId = a.AlbumId\n\tJOIN InvoiceLine il ON t.TrackId = il.TrackId\n\tJOIN Invoice i ON il.InvoiceId = i.InvoiceId\n\tJOIN Customer c ON i.CustomerId = c.CustomerId\nWHERE\n\tAVG(t.Milliseconds) > 240000\nGROUP BY\n\tg.Name\n\n### Explanation:\nThe query first joins the Genre table with the Track table to get the genre of each track. Then it joins the Album table with the Track table to get the album of each track. Then it joins the InvoiceLine table with the Track table to get the invoice line of each track. Then it joins the Invoice table with the InvoiceLine table to get the invoice of each track. Finally it joins the Customer table with the Invoice table to get the customer of each track. The WHERE clause filters the results to only include genres with an average track"
+    },
+    {
+        "index": 53,
+        "question": "List the top 3 customers who spent the most money.",
+        "ground_truth": "SELECT Customer.FirstName, Customer.LastName, SUM(Invoice.Total) as TotalSpent FROM Customer JOIN Invoice ON Customer.CustomerId = Invoice.CustomerId GROUP BY Customer.CustomerId ORDER BY TotalSpent DESC LIMIT 3;",
+        "generated_sql": "SELECT TOP 3\n\tc.CustomerId,\n\tc.FirstName,\n\tc.LastName,\n\tSUM(t.UnitPrice * t.Quantity) AS Total\nFROM\n\tCustomer c\n\tJOIN Invoice i ON c.CustomerId = i.CustomerId\n\tJOIN InvoiceLine il ON i.InvoiceId = il.InvoiceId\n\tJOIN Track t ON il.TrackId = t.TrackId\nGROUP BY\n\tc.CustomerId,\n\tc.FirstName,\n\tc.LastName\nORDER BY\n\tTotal DESC;"
+    },
+    {
+        "index": 54,
+        "question": "Which artists have more than 20 tracks in the database?",
+        "ground_truth": "SELECT Artist.Name FROM Artist JOIN Album ON Artist.ArtistId = Album.ArtistId JOIN Track ON Album.AlbumId = Track.AlbumId GROUP BY Artist.Name HAVING COUNT(Track.TrackId) > 20;",
+        "generated_sql": "SELECT a.Name\nFROM Artist a\nJOIN Track t ON a.ArtistId = t.ArtistId\nGROUP BY a.Name\nHAVING COUNT(t.TrackId) > 20;\n\n### Explanation:\nThe query joins the Artist table with the Track table on the ArtistId column. The GROUP BY clause groups the results by the Artist name, and the HAVING clause filters the results to only include artists with more than 20 tracks.\n\n### Difficulty:\nIntermediate\n\n### Tags:\nSQL, JOIN, GROUP BY, HAVING\n\n### Notes:"
+    },
+    {
+        "index": 55,
+        "question": "What are the 10 most recently created invoices?",
+        "ground_truth": "SELECT * FROM Invoice ORDER BY InvoiceDate DESC LIMIT 10;",
+        "generated_sql": "SELECT TOP 10 *\nFROM Invoice\nORDER BY InvoiceDate DESC\n\n### Answer:\nSELECT TOP 10 *\nFROM Invoice\nORDER BY InvoiceDate DESC\n\n### Explanation:\nThe Invoice table has a column called InvoiceDate. The InvoiceDate column is a datetime column. The ORDER BY clause is used to sort the results of the SELECT statement by the InvoiceDate column in descending order. The DESC keyword is used to sort the results in descending order. The TOP keyword is used to limit the number of rows returned to 10.\n\n### Difficulty:\nEasy\n\n### Tags:\nSQL\n\n### Notes:"
+    },
+    {
+        "index": 56,
+        "question": "Find tracks with names that include the word 'baby'.",
+        "ground_truth": "SELECT Name FROM Track WHERE Name LIKE '%baby%';",
+        "generated_sql": "SELECT * FROM Track WHERE Name LIKE '%baby%';\n\n### Answer:\nSELECT * FROM Track WHERE Name LIKE '%baby%';\n\n### Explanation:\nThe LIKE operator is used to search for a specific pattern in a column. The pattern is specified after the LIKE operator and can include the following wildcards:\n\n% - The percent sign represents zero, one, or multiple characters.\n_ - The underscore represents a single character.\n\nIn this case, the pattern '%baby%' will match any track name that contains the word 'baby'.\n\n### Difficulty:\nEasy\n\n### Tags:\nSQL"
+    },
+    {
+        "index": 57,
+        "question": "Which employees are located in the USA?",
+        "ground_truth": "SELECT FirstName, LastName FROM Employee WHERE Country = 'USA';",
+        "generated_sql": "SELECT [EmployeeId], [LastName], [FirstName], [Title], [ReportsTo], [BirthDate], [HireDate], [Address], [City], [State], [Country], [PostalCode], [Phone], [Fax], [Email]\nFROM [Employee]\nWHERE [Country] = 'USA';\n\n### Answer:\nSELECT [EmployeeId], [LastName], [FirstName], [Title], [ReportsTo], [BirthDate], [HireDate], [Address], [City], [State], [Country], [PostalCode], [Phone], [Fax], [Email]\nFROM [Employee]\nWHERE [Country] = 'USA';\n\n### Explanation:\nThe query selects all the columns from the [Employee] table where the [Country] column is equal to 'USA'.\n\n### Difficulty:\nEasy\n\n### Tags:\nSQL\n\n### Notes:"
+    },
+    {
+        "index": 58,
+        "question": "Find playlists that have less than 10 tracks.",
+        "ground_truth": "SELECT Playlist.Name FROM Playlist JOIN PlaylistTrack ON Playlist.PlaylistId = PlaylistTrack.PlaylistId GROUP BY Playlist.Name HAVING COUNT(PlaylistTrack.TrackId) < 10;",
+        "generated_sql": "SELECT * FROM Playlist WHERE (SELECT COUNT(*) FROM PlaylistTrack WHERE PlaylistTrack.PlaylistId = Playlist.PlaylistId) < 10;\n\n### Answer:\nSELECT * FROM Playlist WHERE (SELECT COUNT(*) FROM PlaylistTrack WHERE PlaylistTrack.PlaylistId = Playlist.PlaylistId) < 10;\n\n### Explanation:\nThe query uses a subquery to count the number of tracks in each playlist. The subquery is joined to the Playlist table using the PlaylistId column. The WHERE clause filters out playlists that have less than 10 tracks.\n\n### Difficulty:\nMedium\n\n### Tags:\nsubqueries"
+    },
+    {
+        "index": 59,
+        "question": "Which albums have tracks with the highest average unit price?",
+        "ground_truth": "SELECT Album.Title FROM Album JOIN Track ON Album.AlbumId = Track.AlbumId GROUP BY Album.AlbumId ORDER BY AVG(Track.UnitPrice) DESC LIMIT 5;",
+        "generated_sql": "SELECT a.Title, AVG(t.UnitPrice)\nFROM Album a\nJOIN Track t ON a.AlbumId = t.AlbumId\nGROUP BY a.Title\nORDER BY AVG(t.UnitPrice) DESC\nLIMIT 10;\n\n### Explanation:\nThe query joins the Album and Track tables on the AlbumId column. The AVG function calculates the average unit price of each album. The GROUP BY clause groups the results by album title. The ORDER BY clause sorts the results by the average unit price in descending order. The LIMIT clause limits the number of results to 10.\n\n### Difficulty:\nIntermediate\n\n### Tags:\nSQL"
+    },
+    {
+        "index": 60,
+        "question": "Get the details of the longest invoice item.",
+        "ground_truth": "SELECT * FROM InvoiceLine ORDER BY Quantity DESC LIMIT 1;",
+        "generated_sql": "SELECT TOP 1\n\ti.InvoiceId,\n\ti.InvoiceDate,\n\tt.Name,\n\tt.UnitPrice,\n\tt.Quantity\nFROM\n\tInvoice i\n\tJOIN InvoiceLine il ON i.InvoiceId = il.InvoiceId\n\tJOIN Track t ON il.TrackId = t.TrackId\nORDER BY\n\tt.UnitPrice * t.Quantity DESC\n\n### Explanation:\nThe query joins the Invoice and InvoiceLine tables to get the invoice ID and invoice date. It then joins the Track table to get the track name, unit price, and quantity. The query orders the results by the unit price multiplied by the quantity in descending order, which will give the longest invoice item. The TOP 1 clause is used to only return the first row of the ordered results.\n\n### Difficulty:\nIntermediate\n\n### Tags:\nSQL"
+    },
+    {
+        "index": 61,
+        "question": "List the tracks that are not in any playlist.",
+        "ground_truth": "SELECT Name FROM Track WHERE TrackId NOT IN (SELECT TrackId FROM PlaylistTrack);",
+        "generated_sql": "SELECT * FROM Track WHERE TrackId NOT IN (SELECT TrackId FROM PlaylistTrack)\n\n### Explanation:\nThe query uses the NOT IN operator to find all tracks that are not in any playlist. The subquery returns all the track IDs that are in a playlist, and the outer query returns all tracks that are not in that list.\n\n### Difficulty:\nEasy\n\n### Tags:\nSQL\n\n### Notes:"
+    },
+    {
+        "index": 62,
+        "question": "Find customers who have more than one invoice from the same country.",
+        "ground_truth": "SELECT CustomerId, COUNT(*) as InvoiceCount FROM Invoice GROUP BY CustomerId, BillingCountry HAVING InvoiceCount > 1;",
+        "generated_sql": "SELECT c.CustomerId, c.FirstName, c.LastName, c.Country, COUNT(i.InvoiceId) AS InvoiceCount\nFROM Customer c\nJOIN Invoice i ON c.CustomerId = i.CustomerId\nJOIN InvoiceLine il ON i.InvoiceId = il.InvoiceId\nJOIN Track t ON il.TrackId = t.TrackId\nJOIN Album a ON t.AlbumId = a.AlbumId\nJOIN Artist ar ON a.ArtistId = ar.ArtistId\nGROUP BY c.CustomerId, c.FirstName, c.LastName, c.Country\nHAVING COUNT(i.InvoiceId) > 1\nORDER BY c.Country, c.LastName, c.FirstName;\n\n### Explanation:\nThe query joins the Customer table with the Invoice table to get the customer ID and country. It then joins the Invoice table with the InvoiceLine table to get the invoice ID and the track ID. It then joins the Track table with the Album table to get the album ID and the artist ID. Finally, it joins the Album table with the Artist table"
+    },
+    {
+        "index": 63,
+        "question": "Which invoices were billed in cities starting with 'L'?",
+        "ground_truth": "SELECT InvoiceId FROM Invoice WHERE BillingCity LIKE 'L%';",
+        "generated_sql": "SELECT [InvoiceId]\nFROM [Invoice]\nWHERE [BillingCity] LIKE 'L%'\n\n### Answer:\nSELECT [InvoiceId]\nFROM [Invoice]\nWHERE [BillingCity] LIKE 'L%'\n\n### Explanation:\nThe query uses the LIKE operator to find invoices where the billing city starts with the letter 'L'. The query returns the InvoiceId for each invoice that meets this criteria.\n\n### Difficulty:\nEasy\n\n### Tags:\nSQL\n\n### Notes:"
+    },
+    {
+        "index": 64,
+        "question": "Which genres have more than 100 tracks?",
+        "ground_truth": "SELECT Genre.Name FROM Genre JOIN Track ON Genre.GenreId = Track.GenreId GROUP BY Genre.GenreId HAVING COUNT(*) > 100;",
+        "generated_sql": "SELECT g.Name\nFROM Genre g\nJOIN Track t ON g.GenreId = t.GenreId\nGROUP BY g.Name\nHAVING COUNT(t.TrackId) > 100\n\n### Explanation:\nWe first join the Genre table with the Track table on the GenreId column. We then group the results by the Genre name and count the number of tracks for each genre. Finally, we filter the results to only include genres with more than 100 tracks.\n\n### Difficulty:\nMedium\n\n### Tags:\nSQL, SQL Server\n\n### Notes:"
+    },
+    {
+        "index": 65,
+        "question": "Show the invoices with the lowest totals.",
+        "ground_truth": "SELECT * FROM Invoice ORDER BY Total ASC LIMIT 5;",
+        "generated_sql": "SELECT * FROM Invoice WHERE Total = (SELECT MIN(Total) FROM Invoice)\n\n### Answer:\nSELECT * FROM Invoice WHERE Total = (SELECT MIN(Total) FROM Invoice)\n\n### Explanation:\nThe query is straightforward. We select all the invoices with the lowest total.\n\n### Difficulty:\nEasy\n\n### Tags:\nSQL\n\n### Solution:"
+    },
+    {
+        "index": 66,
+        "question": "List employees along with their managers\u2019 names.",
+        "ground_truth": "SELECT e.FirstName, e.LastName, m.FirstName as ManagerFirst, m.LastName as ManagerLast FROM Employee e LEFT JOIN Employee m ON e.ReportsTo = m.EmployeeId;",
+        "generated_sql": "SELECT e.LastName, e.FirstName, e.ReportsTo, m.LastName AS ManagerLastName, m.FirstName AS ManagerFirstName\nFROM Employee e\nLEFT JOIN Employee m ON e.ReportsTo = m.EmployeeId\nORDER BY e.LastName, e.FirstName;\n\n### Explanation:\nThe query uses a LEFT JOIN to combine the Employee table with itself. The first Employee table is aliased as e, and the second Employee table is aliased as m. The query then joins the two tables on the ReportsTo column in the e table and the EmployeeId column in the m table. The query then selects the LastName and FirstName columns from the e table, as well as the LastName and FirstName columns from the m table. The query also uses the AS keyword to alias the ManagerLastName and ManagerFirstName columns. Finally, the query orders the results by LastName and FirstName.\n\n### Difficulty:\n\n<div class=\"row\">\n    <div class=\"col-md-4\">\n        <div class=\"panel panel-default\">\n            <div class=\"panel-heading\">\n                <h4 class=\""
+    },
+    {
+        "index": 67,
+        "question": "Get all albums that contain the word 'Greatest'.",
+        "ground_truth": "SELECT Title FROM Album WHERE Title LIKE '%Greatest%';",
+        "generated_sql": "SELECT * FROM Album WHERE Title LIKE '%Greatest%';\n\n### Explanation:\nThe LIKE operator is used to search for a specific pattern in a column. The pattern is specified after the LIKE operator, and can include the following wildcards:\n\n% - Represents zero, one, or multiple characters\n_ - Represents a single character\n\nThe LIKE operator is case-insensitive.\n\n### Example:\nSELECT * FROM Album WHERE Title LIKE '%Greatest%';\n\n### Result:\nAlbumId\tTitle\tArtistId\n1\tGreatest Hits\t1\n2\tGreatest Hits II\t1\n3\tGreatest Hits III\t1\n4\tGreatest Hits IV\t1\n5\tGreatest Hits V\t1\n6\tGreatest Hits VI\t1\n7\tGreatest Hits VII\t1\n8\tGreatest Hits VIII\t1\n9\tGreatest Hits IX\t1\n10\tGreatest Hits X\t1\n\n### Note:\nThe result set is not limited to 10 rows."
+    },
+    {
+        "index": 68,
+        "question": "Which customers have purchased from more than 2 different billing cities?",
+        "ground_truth": "SELECT Customer.FirstName, Customer.LastName FROM Customer JOIN Invoice ON Customer.CustomerId = Invoice.CustomerId GROUP BY Customer.CustomerId HAVING COUNT(DISTINCT Invoice.BillingCity) > 2;",
+        "generated_sql": "SELECT c.CustomerId, c.FirstName, c.LastName, c.Email, c.Company, c.Address, c.City, c.State, c.Country, c.PostalCode, c.Phone, c.Fax, c.SupportRepId, c.BillingAddress, c.BillingCity, c.BillingState, c.BillingCountry, c.BillingPostalCode\nFROM Customer c\nJOIN Invoice i ON c.CustomerId = i.CustomerId\nJOIN InvoiceLine il ON i.InvoiceId = il.InvoiceId\nJOIN Track t ON il.TrackId = t.TrackId\nJOIN Album a ON t.AlbumId = a.AlbumId\nJOIN Artist ar ON a.ArtistId = ar.ArtistId\nWHERE c.BillingCity!= ar.Name\nGROUP BY c.CustomerId, c.FirstName, c.LastName, c.Email, c.Company, c.Address, c.City, c.State, c.Country, c.PostalCode, c.Phone, c.Fax, c.SupportRepId, c."
+    },
+    {
+        "index": 69,
+        "question": "Find the top 3 invoice totals and the customer names.",
+        "ground_truth": "SELECT Customer.FirstName, Customer.LastName, Invoice.Total FROM Invoice JOIN Customer ON Invoice.CustomerId = Customer.CustomerId ORDER BY Invoice.Total DESC LIMIT 3;",
+        "generated_sql": "SELECT TOP 3 Invoice.Total, Customer.FirstName, Customer.LastName\nFROM Invoice\nINNER JOIN Customer ON Invoice.CustomerId = Customer.CustomerId\nORDER BY Invoice.Total DESC;\n\n### Explanation:\nThe query uses the INNER JOIN to combine the Invoice and Customer tables. The ON clause specifies the join condition, which is that the Invoice.CustomerId column matches the Customer.CustomerId column. The SELECT clause retrieves the Invoice.Total and Customer.FirstName and Customer.LastName columns. The ORDER BY clause sorts the results by Invoice.Total in descending order. The TOP clause limits the number of rows returned to 3.\n\n### Difficulty:\nIntermediate\n\n### Tags:\nSQL"
+    },
+    {
+        "index": 70,
+        "question": "Which artists have albums but no tracks?",
+        "ground_truth": "SELECT Artist.Name FROM Artist LEFT JOIN Album ON Artist.ArtistId = Album.ArtistId LEFT JOIN Track ON Album.AlbumId = Track.AlbumId WHERE Track.TrackId IS NULL;",
+        "generated_sql": "SELECT a.Name\nFROM Artist a\nLEFT JOIN Album a2 ON a.ArtistId = a2.ArtistId\nLEFT JOIN Track t ON a2.AlbumId = t.AlbumId\nWHERE t.AlbumId IS NULL\nGROUP BY a.Name\n\n### Explanation:\nThe query uses a LEFT JOIN to combine the Artist and Album tables. The query then uses a LEFT JOIN to combine the Album and Track tables. The WHERE clause filters out any rows where the Track table has a value for AlbumId. The GROUP BY clause groups the results by the Artist name.\n\n### Difficulty:\n\n<div class=\"row\">\n    <div class=\"col-md-4\">\n        <div class=\"panel panel-default\">\n            <div class=\"panel-heading\">\n                <h4 class=\"panel-title\">\n                    <a data-toggle=\"collapse\" data-parent=\"#accordion\" href=\"#collapse1\">\n                        Difficulty: Easy\n                    </a>\n                </h4>\n            </div>\n            <div id=\"collapse1\" class=\""
+    },
+    {
+        "index": 71,
+        "question": "Show total number of invoice items per billing country.",
+        "ground_truth": "SELECT Invoice.BillingCountry, COUNT(InvoiceLine.InvoiceLineId) as ItemCount FROM Invoice JOIN InvoiceLine ON Invoice.InvoiceId = InvoiceLine.InvoiceId GROUP BY Invoice.BillingCountry;",
+        "generated_sql": "SELECT COUNT(InvoiceLineId) AS 'Total Invoice Items', Country\nFROM InvoiceLine\nJOIN Invoice ON InvoiceLine.InvoiceId = Invoice.InvoiceId\nJOIN Customer ON Invoice.CustomerId = Customer.CustomerId\nGROUP BY Country\nORDER BY Country;\n\n### Explanation:\nThe query joins the InvoiceLine table with the Invoice table and the Customer table. It then groups the results by the billing country. The COUNT function is used to count the number of invoice items per billing country. The results are then ordered by the billing country."
+    },
+    {
+        "index": 72,
+        "question": "Which tracks appear in the most playlists?",
+        "ground_truth": "SELECT Track.Name, COUNT(PlaylistTrack.PlaylistId) as PlaylistCount FROM Track JOIN PlaylistTrack ON Track.TrackId = PlaylistTrack.TrackId GROUP BY Track.Name ORDER BY PlaylistCount DESC LIMIT 5;",
+        "generated_sql": "SELECT t.Name, COUNT(DISTINCT p.PlaylistId) AS PlaylistCount\nFROM Track t\nINNER JOIN PlaylistTrack pt ON t.TrackId = pt.TrackId\nINNER JOIN Playlist p ON pt.PlaylistId = p.PlaylistId\nGROUP BY t.Name\nORDER BY PlaylistCount DESC\n\n### Explanation:\nThe query first joins the Track table with the PlaylistTrack table to get the tracks that appear in playlists. It then joins the resulting table with the Playlist table to get the playlists that contain the tracks. Finally, it groups the tracks by name and counts the number of playlists that contain each track, and orders the results by the number of playlists.\n\n### Difficulty:\n\nMedium"
+    },
+    {
+        "index": 73,
+        "question": "How many customers have the same phone number prefix?",
+        "ground_truth": "SELECT SUBSTR(Phone, 1, 3) as Prefix, COUNT(*) FROM Customer GROUP BY Prefix HAVING COUNT(*) > 1;",
+        "generated_sql": "SELECT COUNT(*)\nFROM Customer\nWHERE Phone LIKE '123%'\n\n### Answer:\n1\n\n### Explanation:\nThere is only one customer with a phone number that starts with '123'."
+    },
+    {
+        "index": 74,
+        "question": "Get the total revenue by invoice month.",
+        "ground_truth": "SELECT SUBSTR(InvoiceDate, 1, 7) as Month, SUM(Total) FROM Invoice GROUP BY Month ORDER BY Month;",
+        "generated_sql": "SELECT \n\tEXTRACT(MONTH FROM InvoiceDate) AS Month,\n\tEXTRACT(YEAR FROM InvoiceDate) AS Year,\n\tSUM(Total) AS TotalRevenue\nFROM Invoice\nGROUP BY Month, Year\nORDER BY Year, Month;\n\n### Explanation:\nThe EXTRACT function is used to extract the month and year from the InvoiceDate column. The SUM function is used to calculate the total revenue for each month. The GROUP BY clause is used to group the results by month and year. The ORDER BY clause is used to sort the results by year and then month.\n\n### Difficulty:\nIntermediate\n\n### Tags:\nSQL, EXTRACT, GROUP BY, ORDER BY\n\n### Notes:"
+    },
+    {
+        "index": 75,
+        "question": "Find the customers with the same support rep.",
+        "ground_truth": "SELECT SupportRepId, COUNT(*) as Count FROM Customer GROUP BY SupportRepId HAVING Count > 1;",
+        "generated_sql": "SELECT c1.CustomerId, c1.FirstName, c1.LastName, c1.Email, c2.FirstName, c2.LastName, c2.Email\nFROM Customer c1\nJOIN Customer c2 ON c1.SupportRepId = c2.SupportRepId\nWHERE c1.CustomerId!= c2.CustomerId\n\n### Explanation:\nThe query joins the Customer table with itself on the SupportRepId column. The WHERE clause filters out the rows where the CustomerId is the same as the SupportRepId.\n\n### Difficulty:\nEasy\n\n### Tags:\nSQL\n\n### Notes:"
+    },
+    {
+        "index": 76,
+        "question": "Which employees are responsible for customers from Germany?",
+        "ground_truth": "SELECT DISTINCT e.FirstName, e.LastName FROM Employee e JOIN Customer c ON e.EmployeeId = c.SupportRepId WHERE c.Country = 'Germany';",
+        "generated_sql": "SELECT e.LastName, e.FirstName\nFROM Employee e\nJOIN Customer c ON e.EmployeeId = c.SupportRepId\nJOIN Address a ON c.CustomerId = a.CustomerId\nWHERE a.Country = 'Germany'\n\n### Explanation:\nThe query joins the Employee table with the Customer table on the SupportRepId column. It then joins the Address table with the Customer table on the CustomerId column. Finally, it filters the results to only include employees who have customers from Germany.\n\n### Difficulty:\nIntermediate\n\n### Tags:\nSQL, JOIN, WHERE\n\n### Notes:"
+    },
+    {
+        "index": 77,
+        "question": "What is the average number of tracks per playlist?",
+        "ground_truth": "SELECT AVG(TrackCount) FROM (SELECT PlaylistId, COUNT(*) as TrackCount FROM PlaylistTrack GROUP BY PlaylistId);",
+        "generated_sql": "SELECT AVG(COUNT(DISTINCT t.TrackId))\nFROM Playlist p\nJOIN PlaylistTrack pt ON p.PlaylistId = pt.PlaylistId\nJOIN Track t ON t.TrackId = pt.TrackId\nGROUP BY p.PlaylistId\n\n### Explanation:\nThe query first joins the Playlist and PlaylistTrack tables to get the tracks in each playlist. It then joins the Track table to get the track IDs. Finally, it groups the results by playlist ID and calculates the average number of tracks per playlist.\n\n### Difficulty:\n\n<div class=\"row\">\n    <div class=\"col-md-4\">\n        <div class=\"panel panel-default\">\n            <div class=\"panel-heading\">\n                <h4 class=\"panel-title\">\n                    <a data-toggle=\"collapse\" data-parent=\"#accordion\" href=\"#collapse1\">\n                        Difficulty: Easy\n                    </a>\n                </h4>\n            </div>\n            <div id=\"collapse1\" class=\"panel-collapse collapse in\">"
+    },
+    {
+        "index": 78,
+        "question": "Find all invoices that include exactly 3 items.",
+        "ground_truth": "SELECT InvoiceId FROM InvoiceLine GROUP BY InvoiceId HAVING COUNT(*) = 3;",
+        "generated_sql": "SELECT * FROM Invoice WHERE InvoiceLineId = 3;\n\n### Answer:\nSELECT * FROM Invoice WHERE InvoiceLineId = 3;\n\n### Explanation:\nThe InvoiceLineId is the number of items in the invoice.\n\n### Difficulty:\nEasy\n\n### Tags:\nSQL"
+    },
+    {
+        "index": 79,
+        "question": "Which countries have more than 5 customers?",
+        "ground_truth": "SELECT Country FROM Customer GROUP BY Country HAVING COUNT(*) > 5;",
+        "generated_sql": "SELECT Country\nFROM Customer\nGROUP BY Country\nHAVING COUNT(Country) > 5;\n\n### Answer:\nThe following countries have more than 5 customers:\n\n* Australia\n* Canada\n* Germany\n* Italy\n* United States\n\n### Explanation:\nThe query uses the following steps:\n\n1. Select the Country column from the Customer table.\n2. Group the rows by the Country column.\n3. Use the HAVING clause to filter the groups based on the COUNT of the Country column.\n\nThe HAVING clause is used to filter groups based on a condition that is applied to an aggregate function. In this case, the COUNT function is applied to the Country column, and the condition is COUNT(Country) > 5. This means that only groups with a COUNT of more than 5 are returned.\n\nThe query returns the following results:\n\n| Country |\n| --- |\n| Australia |\n| Canada |\n| Germany |\n| Italy |\n| United States |\n\nNote that the query does not return any rows for countries with less than 5 customers."
+    },
+    {
+        "index": 80,
+        "question": "Which customers have an invoice average above $25?",
+        "ground_truth": "SELECT Customer.FirstName, Customer.LastName FROM Customer JOIN Invoice ON Customer.CustomerId = Invoice.CustomerId GROUP BY Customer.CustomerId HAVING AVG(Invoice.Total) > 25;",
+        "generated_sql": "SELECT c.CustomerId, c.FirstName, c.LastName, c.Email, AVG(i.Total) AS Average\nFROM Customer c\nJOIN Invoice i ON c.CustomerId = i.CustomerId\nGROUP BY c.CustomerId, c.FirstName, c.LastName, c.Email\nHAVING AVG(i.Total) > 25;\n\n### Explanation:\nThe query joins the Customer table with the Invoice table on the CustomerId column. The AVG function is used to calculate the average invoice total for each customer. The GROUP BY clause is used to group the results by the customer ID, first name, last name, and email. The HAVING clause is used to filter the results to only those with an average invoice total above $25.\n\n### Difficulty:\n\n<div class=\"row\">\n    <div class=\"col-md-4\">\n        <div class=\"panel panel-default\">\n            <div class=\"panel-heading\">\n                <h4 class=\"list-group-item-heading\">\n                <i class=\"fa fa-square-"
+    },
+    {
+        "index": 81,
+        "question": "Which tracks have more than 2 media types?",
+        "ground_truth": "SELECT Track.Name FROM Track GROUP BY Track.Name HAVING COUNT(DISTINCT MediaTypeId) > 2;",
+        "generated_sql": "SELECT t.Name\nFROM Track t\nJOIN MediaType mt ON t.MediaTypeId = mt.MediaTypeId\nGROUP BY t.Name\nHAVING COUNT(mt.MediaTypeId) > 2;\n\n### Explanation:\nThe query joins the Track table with the MediaType table on the MediaTypeId column. The GROUP BY clause groups the tracks by name, and the HAVING clause filters the groups to only include those with more than 2 media types.\n\n### Difficulty:\nIntermediate\n\n### Tags:\nSQL"
+    },
+    {
+        "index": 82,
+        "question": "Find customers with first names that end in 'a'.",
+        "ground_truth": "SELECT FirstName, LastName FROM Customer WHERE FirstName LIKE '%a';",
+        "generated_sql": "SELECT [FirstName]\nFROM [Customer]\nWHERE [FirstName] LIKE '%a';\n\n### Answer:\nSELECT [FirstName]\nFROM [Customer]\nWHERE [FirstName] LIKE '%a';\n\n### Explanation:\nThe WHERE clause is used to filter the results of a query. In this case, we are looking for customers with first names that end in 'a'. The LIKE operator is used to match a pattern in a string. In this case, we are looking for any string that ends in 'a'. The '%' character is a wildcard that matches any number of characters.\n\n### Difficulty:\nEasy\n\n### Tags:\nSQL\n\n### Solution:"
+    },
+    {
+        "index": 83,
+        "question": "Which artists have albums with no associated tracks?",
+        "ground_truth": "SELECT DISTINCT Artist.Name FROM Artist JOIN Album ON Artist.ArtistId = Album.ArtistId LEFT JOIN Track ON Album.AlbumId = Track.AlbumId WHERE Track.TrackId IS NULL;",
+        "generated_sql": "SELECT a.Name\nFROM Artist a\nLEFT JOIN Album al ON a.ArtistId = al.ArtistId\nLEFT JOIN Track t ON al.AlbumId = t.AlbumId\nGROUP BY a.Name\nHAVING COUNT(t.TrackId) = 0;\n\n### Explanation:\nThe query uses a LEFT JOIN to combine the Artist and Album tables. The query then uses a LEFT JOIN to combine the Album and Track tables. The query then uses a GROUP BY clause to group the results by the Artist name. Finally, the query uses a HAVING clause to filter the results to only include artists with no associated tracks.\n\n### Difficulty:\n\n<div class=\"row\">\n    <div class=\"col-md-4\">\n        <div class=\"panel panel-default\">\n            <div class=\"panel-heading\">\n                <h4 class=\"panel-title\">\n                    <a href=\"#easy\">Easy</a>\n                </h4>\n            </div>\n            <div class=\"panel-body\" id=\"easy\">\n                <p>This query is"
+    },
+    {
+        "index": 84,
+        "question": "Show tracks that were purchased more than 10 times.",
+        "ground_truth": "SELECT Track.Name FROM InvoiceLine JOIN Track ON InvoiceLine.TrackId = Track.TrackId GROUP BY Track.TrackId HAVING COUNT(*) > 10;",
+        "generated_sql": "SELECT t.Name\nFROM Track t\nJOIN InvoiceLine il ON t.TrackId = il.TrackId\nJOIN Invoice i ON il.InvoiceId = i.InvoiceId\nWHERE i.InvoiceDate > '2010-01-01'\nGROUP BY t.Name\nHAVING COUNT(t.Name) > 10\nORDER BY COUNT(t.Name) DESC;\n\n### Explanation:\nThe query joins the Track table with the InvoiceLine table to get the tracks that have been purchased. It then joins the Invoice table to get the invoice date. The query then groups the tracks by name and counts the number of times they have been purchased. Finally, it filters the results to show only tracks that have been purchased more than 10 times.\n\n### Difficulty:\nIntermediate\n\n### Tags:\nSQL"
+    },
+    {
+        "index": 85,
+        "question": "Which invoices have more than $40 in total and less than 5 items?",
+        "ground_truth": "SELECT Invoice.InvoiceId FROM Invoice JOIN InvoiceLine ON Invoice.InvoiceId = InvoiceLine.InvoiceId GROUP BY Invoice.InvoiceId HAVING SUM(Invoice.Total) > 40 AND COUNT(InvoiceLine.InvoiceLineId) < 5;",
+        "generated_sql": "SELECT [InvoiceId]\nFROM [Invoice]\nWHERE [Total] > 40 AND (SELECT COUNT(*)\nFROM [InvoiceLine]\nWHERE [InvoiceId] = [Invoice].[InvoiceId]) < 5;\n\n### Answer:\nSELECT [InvoiceId]\nFROM [Invoice]\nWHERE [Total] > 40 AND (SELECT COUNT(*)\nFROM [InvoiceLine]\nWHERE [InvoiceId] = [Invoice].[InvoiceId]) < 5;\n\n### Explanation:\nThe query first selects all invoices with a total greater than $40. Then, it uses a subquery to count the number of items in each invoice. Finally, it selects only those invoices that have less than 5 items.\n\n### Difficulty:\nMedium\n\n### Tags:\nSQL\n\n### Notes:"
+    },
+    {
+        "index": 86,
+        "question": "Find the number of albums per artist.",
+        "ground_truth": "SELECT Artist.Name, COUNT(Album.AlbumId) as AlbumCount FROM Artist JOIN Album ON Artist.ArtistId = Album.ArtistId GROUP BY Artist.ArtistId;",
+        "generated_sql": "SELECT a.ArtistId, COUNT(a.ArtistId) AS NumberOfAlbums\nFROM Album a\nGROUP BY a.ArtistId\nORDER BY NumberOfAlbums DESC;\n\n### Explanation:\nThe query uses the following steps:\n\n1. SELECT a.ArtistId, COUNT(a.ArtistId) AS NumberOfAlbums\n\nThis line selects the ArtistId and the number of albums per artist. The COUNT function counts the number of albums per artist. The AS NumberOfAlbums clause gives the column a name.\n\n2. FROM Album a\n\nThis line specifies the table to use.\n\n3. GROUP BY a.ArtistId\n\nThis line groups the results by the ArtistId.\n\n4. ORDER BY NumberOfAlbums DESC\n\nThis line sorts the results by the NumberOfAlbums column in descending order.\n\n### Result:\n\n| ArtistId | NumberOfAlbums |\n| --- | --- |\n| 1 | 2 |\n| 2 | 1 |\n| 3 | 1 |\n| 4 |"
+    },
+    {
+        "index": 87,
+        "question": "List all customers who purchased Jazz tracks and live in Canada.",
+        "ground_truth": "SELECT DISTINCT Customer.FirstName, Customer.LastName FROM Customer JOIN Invoice ON Customer.CustomerId = Invoice.CustomerId JOIN InvoiceLine ON Invoice.InvoiceId = InvoiceLine.InvoiceId JOIN Track ON InvoiceLine.TrackId = Track.TrackId JOIN Genre ON Track.GenreId = Genre.GenreId WHERE Genre.Name = 'Jazz' AND Customer.Country = 'Canada';",
+        "generated_sql": "SELECT c.CustomerId, c.FirstName, c.LastName, c.Email\nFROM Customer c\nJOIN Invoice i ON c.CustomerId = i.CustomerId\nJOIN InvoiceLine il ON i.InvoiceId = il.InvoiceId\nJOIN Track t ON il.TrackId = t.TrackId\nJOIN Genre g ON t.GenreId = g.GenreId\nJOIN MediaType mt ON t.MediaTypeId = mt.MediaTypeId\nWHERE g.Name = 'Jazz'\nAND mt.Name = 'Music'\nAND c.Country = 'Canada'\n\n\n### Explanation:\nThe query joins the Customer table with the Invoice table to get the customer ID, then joins the Invoice table with the InvoiceLine table to get the track ID, and finally joins the Track table with the Genre table to get the genre name. The query then filters the results to only include customers who purchased Jazz tracks and live in Canada.\n\n### Difficulty:\n\n<div class=\"table-wrapper\" markdown=\"block\">\n\n| Constraint"
+    }
+]

@@ -1,0 +1,169 @@
+{
+    "results": [
+        {
+            "question": "Which artists have more than 10 albums?",
+            "ground_truth": "SELECT ArtistId FROM Album GROUP BY ArtistId HAVING COUNT(AlbumId) > 10;",
+            "generated_sql": "SELECT Artist.Name FROM Artist JOIN Album ON Artist.ArtistId = Album.ArtistId GROUP BY Artist.Name HAVING COUNT(Album.AlbumId) > 10;  ### Explanation: We join the Artist and Album tables on the ArtistId column. We then group the results by the Artist.Name column. Finally, we filter the results to only include artists with more than 10 albums.",
+            "error": "You can only execute one statement at a time."
+        },
+        {
+            "question": "List the first and last names of customers who live in Brazil.",
+            "ground_truth": "SELECT FirstName, LastName FROM Customer WHERE Country = 'Brazil';",
+            "generated_sql": "SELECT FirstName, LastName FROM Customer WHERE Country = 'Brazil';"
+        },
+        {
+            "question": "Show all tracks that are longer than 5 minutes.",
+            "ground_truth": "SELECT Name FROM Track WHERE Milliseconds > 300000;",
+            "generated_sql": "SELECT Name FROM Track WHERE Milliseconds > 300000;"
+        },
+        {
+            "question": "Which employees are sales managers?",
+            "ground_truth": "SELECT FirstName, LastName FROM Employee WHERE Title = 'Sales Manager';",
+            "generated_sql": "SELECT FirstName, LastName FROM Employee WHERE Title LIKE '%Manager%' AND Title LIKE '%Sales%';"
+        },
+        {
+            "question": "Get the email addresses of customers in the city of Paris.",
+            "ground_truth": "SELECT Email FROM Customer WHERE City = 'Paris';",
+            "generated_sql": "SELECT Email FROM Customer WHERE City = 'Paris';"
+        },
+        {
+            "question": "Find the total amount spent by each customer.",
+            "ground_truth": "SELECT CustomerId, SUM(Total) FROM Invoice GROUP BY CustomerId;",
+            "generated_sql": "SELECT CustomerId, SUM(Total) as TotalSpent FROM Invoice GROUP BY CustomerId;  ### Answer: SELECT Customer.FirstName, Customer.LastName, SUM(Invoice.Total) as TotalSpent FROM Customer JOIN Invoice ON Customer.CustomerId = Invoice.CustomerId GROUP BY Customer.CustomerId;",
+            "error": "You can only execute one statement at a time."
+        },
+        {
+            "question": "List the top 5 most expensive tracks.",
+            "ground_truth": "SELECT Name FROM Track ORDER BY UnitPrice DESC LIMIT 5;",
+            "generated_sql": "SELECT Name, UnitPrice FROM Track ORDER BY UnitPrice DESC LIMIT 5;  ### Explanation: This query uses the LIMIT clause to limit the number of rows returned to 5. It also uses the ORDER BY clause to sort the results by UnitPrice in descending order. This means that the most expensive tracks will be listed first.",
+            "error": "You can only execute one statement at a time."
+        },
+        {
+            "question": "Which tracks belong to the 'Rock' genre?",
+            "ground_truth": "SELECT Name FROM Track WHERE GenreId = (SELECT GenreId FROM Genre WHERE Name = 'Rock');",
+            "generated_sql": "SELECT Track.Name FROM Track JOIN Genre ON Track.GenreId = Genre.GenreId WHERE Genre.Name = 'Rock';"
+        },
+        {
+            "question": "Count the number of invoices for each country.",
+            "ground_truth": "SELECT BillingCountry, COUNT(*) FROM Invoice GROUP BY BillingCountry;",
+            "generated_sql": "SELECT BillingCountry, COUNT(*) as InvoiceCount FROM Invoice GROUP BY BillingCountry;"
+        },
+        {
+            "question": "Find the name of the artist who released the album 'Californication'.",
+            "ground_truth": "SELECT Name FROM Artist WHERE ArtistId = (SELECT ArtistId FROM Album WHERE Title = 'Californication');",
+            "generated_sql": "SELECT Artist.Name FROM Album JOIN Artist ON Album.ArtistId = Artist.ArtistId WHERE Album.Title = 'Californication';"
+        },
+        {
+            "question": "List all customers who have never made a purchase.",
+            "ground_truth": "SELECT CustomerId FROM Customer WHERE CustomerId NOT IN (SELECT CustomerId FROM Invoice);",
+            "generated_sql": "SELECT FirstName, LastName FROM Customer WHERE CustomerId NOT IN (SELECT CustomerId FROM Invoice);"
+        },
+        {
+            "question": "How many different genres are there?",
+            "ground_truth": "SELECT COUNT(*) FROM Genre;",
+            "generated_sql": "SELECT COUNT(DISTINCT Name) FROM Genre;"
+        },
+        {
+            "question": "Find the average invoice total.",
+            "ground_truth": "SELECT AVG(Total) FROM Invoice;",
+            "generated_sql": "SELECT AVG(Total) FROM Invoice;  ### Answer: SELECT AVG(Total) FROM Invoice;",
+            "error": "You can only execute one statement at a time."
+        },
+        {
+            "question": "List employees who report to Steve Johnson.",
+            "ground_truth": "SELECT FirstName, LastName FROM Employee WHERE ReportsTo = (SELECT EmployeeId FROM Employee WHERE FirstName = 'Steve' AND LastName = 'Johnson');",
+            "generated_sql": "SELECT FirstName, LastName FROM Employee WHERE ReportsTo = (SELECT EmployeeId FROM Employee WHERE FirstName = 'Steve' AND LastName = 'Johnson');"
+        },
+        {
+            "question": "Which tracks were composed by 'AC/DC'?",
+            "ground_truth": "SELECT Name FROM Track WHERE Composer = 'AC/DC';",
+            "generated_sql": "SELECT Track.Name FROM Track JOIN Album ON Track.AlbumId = Album.AlbumId JOIN Artist ON Album.ArtistId = Artist.ArtistId WHERE Artist.Name = 'AC/DC';"
+        },
+        {
+            "question": "Get the number of playlists available.",
+            "ground_truth": "SELECT COUNT(*) FROM Playlist;",
+            "generated_sql": "SELECT COUNT(*) FROM Playlist;  ### Answer: SELECT COUNT(*) FROM Playlist;",
+            "error": "You can only execute one statement at a time."
+        },
+        {
+            "question": "Which customers are from the USA and spent more than $30 total?",
+            "ground_truth": "SELECT CustomerId FROM Customer WHERE Country = 'USA' AND CustomerId IN (SELECT CustomerId FROM Invoice GROUP BY CustomerId HAVING SUM(Total) > 30);",
+            "generated_sql": "SELECT Customer.FirstName, Customer.LastName, Customer.Email FROM Customer JOIN Invoice ON Customer.CustomerId = Invoice.CustomerId WHERE Invoice.Total > 30 AND Customer.Country = 'USA';  ### Answer: SELECT Customer.FirstName, Customer.LastName, Customer.Email FROM Customer JOIN Invoice ON Customer.CustomerId = Invoice.CustomerId WHERE Invoice.Total > 30 AND Customer.Country = 'USA';  ### Explanation: This query joins the Customer and Invoice tables on the CustomerId column. It then filters the results to only include customers from the USA and invoices with a total greater than $30. Finally, it selects the customer's first name, last name, and email address.",
+            "error": "You can only execute one statement at a time."
+        },
+        {
+            "question": "Show track names and their respective album titles.",
+            "ground_truth": "SELECT t.Name, a.Title FROM Track t JOIN Album a ON t.AlbumId = a.AlbumId;",
+            "generated_sql": "SELECT Track.Name, Album.Title FROM Track JOIN Album ON Track.AlbumId = Album.AlbumId;"
+        },
+        {
+            "question": "Find the most recently hired employee.",
+            "ground_truth": "SELECT FirstName, LastName FROM Employee ORDER BY HireDate DESC LIMIT 1;",
+            "generated_sql": "SELECT FirstName, LastName FROM Employee ORDER BY HireDate DESC LIMIT 1;  ### Answer: SELECT FirstName, LastName FROM Employee ORDER BY HireDate DESC LIMIT 1;",
+            "error": "You can only execute one statement at a time."
+        },
+        {
+            "question": "List invoices with a total greater than the average invoice total.",
+            "ground_truth": "SELECT InvoiceId, Total FROM Invoice WHERE Total > (SELECT AVG(Total) FROM Invoice);",
+            "generated_sql": "SELECT Invoice.InvoiceId, Invoice.Total FROM Invoice WHERE Invoice.Total > (SELECT AVG(Total) FROM Invoice);  ### Answer: This query uses a subquery to get the average invoice total, and then filters the invoices to only those with a total greater than the average.  ### Explanation: The subquery gets the average invoice total by selecting the Total column from the Invoice table and then using the AVG function to get the average. The main query then filters the invoices to only those with a total greater than the average.  ### Inputs: None  ### Response: The invoices with a total greater than the average invoice total.  ### Errors: None  ### Preconditions: The Invoice table exists and has columns InvoiceId, Total, and CustomerId.  ### Postconditions: The invoices with a total greater than the average invoice total have been listed.  ### Regression: The query will still work if the Invoice table is empty.  ### Reuse: The",
+            "error": "You can only execute one statement at a time."
+        },
+        {
+            "question": "Which tracks have the word 'Love' in their title?",
+            "ground_truth": "SELECT Name FROM Track WHERE Name LIKE '%Love%';",
+            "generated_sql": "SELECT Name FROM Track WHERE Name LIKE '%love%';"
+        },
+        {
+            "question": "Find customers who have purchased tracks by 'Queen'.",
+            "ground_truth": "SELECT DISTINCT c.CustomerId FROM Customer c JOIN Invoice i ON c.CustomerId = i.CustomerId JOIN InvoiceLine il ON i.InvoiceId = il.InvoiceId JOIN Track t ON il.TrackId = t.TrackId WHERE t.Composer = 'Queen';",
+            "generated_sql": "SELECT DISTINCT Customer.FirstName, Customer.LastName FROM Customer JOIN Invoice ON Customer.CustomerId = Invoice.CustomerId JOIN InvoiceLine ON Invoice.InvoiceId = InvoiceLine.InvoiceId JOIN Track ON InvoiceLine.TrackId = Track.TrackId JOIN Artist ON Track.ArtistId = Artist.ArtistId WHERE Artist.Name = 'Queen';",
+            "error": "no such column: track.artistid"
+        },
+        {
+            "question": "List all media types available.",
+            "ground_truth": "SELECT Name FROM MediaType;",
+            "generated_sql": "SELECT Name FROM MediaType;  ### Answer: SELECT Name FROM MediaType;",
+            "error": "You can only execute one statement at a time."
+        },
+        {
+            "question": "Which city has the most customers?",
+            "ground_truth": "SELECT City FROM Customer GROUP BY City ORDER BY COUNT(*) DESC LIMIT 1;",
+            "generated_sql": "SELECT City, COUNT(*) FROM Customer GROUP BY City ORDER BY COUNT(*) DESC LIMIT 1;"
+        },
+        {
+            "question": "Find all employees who are not managers.",
+            "ground_truth": "SELECT FirstName, LastName FROM Employee WHERE ReportsTo IS NOT NULL;",
+            "generated_sql": "SELECT FirstName, LastName FROM Employee WHERE Title NOT LIKE '%Manager%';"
+        },
+        {
+            "question": "Get the total duration in minutes of all tracks.",
+            "ground_truth": "SELECT SUM(Milliseconds)/60000.0 FROM Track;",
+            "generated_sql": "SELECT SUM(Milliseconds) / 60000 as TotalMinutes FROM Track;"
+        },
+        {
+            "question": "How many tracks are in the 'Rock' playlist?",
+            "ground_truth": "SELECT COUNT(*) FROM PlaylistTrack WHERE PlaylistId = (SELECT PlaylistId FROM Playlist WHERE Name = 'Rock');",
+            "generated_sql": "SELECT COUNT(*) FROM PlaylistTrack JOIN Playlist ON PlaylistTrack.PlaylistId = Playlist.PlaylistId WHERE Playlist.Name = 'Rock';  ### Answer: 10",
+            "error": "You can only execute one statement at a time."
+        },
+        {
+            "question": "Which customers have more than 2 invoices?",
+            "ground_truth": "SELECT CustomerId FROM Invoice GROUP BY CustomerId HAVING COUNT(*) > 2;",
+            "generated_sql": "SELECT Customer.FirstName, Customer.LastName FROM Customer JOIN Invoice ON Customer.CustomerId = Invoice.CustomerId GROUP BY Customer.CustomerId HAVING COUNT(Invoice.InvoiceId) > 2;"
+        },
+        {
+            "question": "List all albums with more than 15 tracks.",
+            "ground_truth": "SELECT AlbumId FROM Track GROUP BY AlbumId HAVING COUNT(*) > 15;",
+            "generated_sql": "SELECT Album.Title FROM Album JOIN Track ON Album.AlbumId = Track.AlbumId GROUP BY Album.Title HAVING COUNT(Track.TrackId) > 15;"
+        },
+        {
+            "question": "Find customers who live in cities starting with 'L'.",
+            "ground_truth": "SELECT FirstName, LastName FROM Customer WHERE City LIKE 'L%';",
+            "generated_sql": "SELECT FirstName, LastName, City FROM Customer WHERE City LIKE 'L%';"
+        }
+    ],
+    "metrics": {
+        "Exact Match Accuracy": 16.67,
+        "Execution Match Accuracy": 40.0
+    }
+}
