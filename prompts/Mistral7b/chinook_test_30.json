@@ -1,0 +1,122 @@
+[
+    {
+        "question": "Which artists have more than 10 albums?",
+        "query": "SELECT ArtistId FROM Album GROUP BY ArtistId HAVING COUNT(AlbumId) > 10;"
+    },
+    {
+        "question": "List the first and last names of customers who live in Brazil.",
+        "query": "SELECT FirstName, LastName FROM Customer WHERE Country = 'Brazil';"
+    },
+    {
+        "question": "Show all tracks that are longer than 5 minutes.",
+        "query": "SELECT Name FROM Track WHERE Milliseconds > 300000;"
+    },
+    {
+        "question": "Which employees are sales managers?",
+        "query": "SELECT FirstName, LastName FROM Employee WHERE Title = 'Sales Manager';"
+    },
+    {
+        "question": "Get the email addresses of customers in the city of Paris.",
+        "query": "SELECT Email FROM Customer WHERE City = 'Paris';"
+    },
+    {
+        "question": "Find the total amount spent by each customer.",
+        "query": "SELECT CustomerId, SUM(Total) FROM Invoice GROUP BY CustomerId;"
+    },
+    {
+        "question": "List the top 5 most expensive tracks.",
+        "query": "SELECT Name FROM Track ORDER BY UnitPrice DESC LIMIT 5;"
+    },
+    {
+        "question": "Which tracks belong to the 'Rock' genre?",
+        "query": "SELECT Name FROM Track WHERE GenreId = (SELECT GenreId FROM Genre WHERE Name = 'Rock');"
+    },
+    {
+        "question": "Count the number of invoices for each country.",
+        "query": "SELECT BillingCountry, COUNT(*) FROM Invoice GROUP BY BillingCountry;"
+    },
+    {
+        "question": "Find the name of the artist who released the album 'Californication'.",
+        "query": "SELECT Name FROM Artist WHERE ArtistId = (SELECT ArtistId FROM Album WHERE Title = 'Californication');"
+    },
+    {
+        "question": "List all customers who have never made a purchase.",
+        "query": "SELECT CustomerId FROM Customer WHERE CustomerId NOT IN (SELECT CustomerId FROM Invoice);"
+    },
+    {
+        "question": "How many different genres are there?",
+        "query": "SELECT COUNT(*) FROM Genre;"
+    },
+    {
+        "question": "Find the average invoice total.",
+        "query": "SELECT AVG(Total) FROM Invoice;"
+    },
+    {
+        "question": "List employees who report to Steve Johnson.",
+        "query": "SELECT FirstName, LastName FROM Employee WHERE ReportsTo = (SELECT EmployeeId FROM Employee WHERE FirstName = 'Steve' AND LastName = 'Johnson');"
+    },
+    {
+        "question": "Which tracks were composed by 'AC/DC'?",
+        "query": "SELECT Name FROM Track WHERE Composer = 'AC/DC';"
+    },
+    {
+        "question": "Get the number of playlists available.",
+        "query": "SELECT COUNT(*) FROM Playlist;"
+    },
+    {
+        "question": "Which customers are from the USA and spent more than $30 total?",
+        "query": "SELECT CustomerId FROM Customer WHERE Country = 'USA' AND CustomerId IN (SELECT CustomerId FROM Invoice GROUP BY CustomerId HAVING SUM(Total) > 30);"
+    },
+    {
+        "question": "Show track names and their respective album titles.",
+        "query": "SELECT t.Name, a.Title FROM Track t JOIN Album a ON t.AlbumId = a.AlbumId;"
+    },
+    {
+        "question": "Find the most recently hired employee.",
+        "query": "SELECT FirstName, LastName FROM Employee ORDER BY HireDate DESC LIMIT 1;"
+    },
+    {
+        "question": "List invoices with a total greater than the average invoice total.",
+        "query": "SELECT InvoiceId, Total FROM Invoice WHERE Total > (SELECT AVG(Total) FROM Invoice);"
+    },
+    {
+        "question": "Which tracks have the word 'Love' in their title?",
+        "query": "SELECT Name FROM Track WHERE Name LIKE '%Love%';"
+    },
+    {
+        "question": "Find customers who have purchased tracks by 'Queen'.",
+        "query": "SELECT DISTINCT c.CustomerId FROM Customer c JOIN Invoice i ON c.CustomerId = i.CustomerId JOIN InvoiceLine il ON i.InvoiceId = il.InvoiceId JOIN Track t ON il.TrackId = t.TrackId WHERE t.Composer = 'Queen';"
+    },
+    {
+        "question": "List all media types available.",
+        "query": "SELECT Name FROM MediaType;"
+    },
+    {
+        "question": "Which city has the most customers?",
+        "query": "SELECT City FROM Customer GROUP BY City ORDER BY COUNT(*) DESC LIMIT 1;"
+    },
+    {
+        "question": "Find all employees who are not managers.",
+        "query": "SELECT FirstName, LastName FROM Employee WHERE ReportsTo IS NOT NULL;"
+    },
+    {
+        "question": "Get the total duration in minutes of all tracks.",
+        "query": "SELECT SUM(Milliseconds)/60000.0 FROM Track;"
+    },
+    {
+        "question": "How many tracks are in the 'Rock' playlist?",
+        "query": "SELECT COUNT(*) FROM PlaylistTrack WHERE PlaylistId = (SELECT PlaylistId FROM Playlist WHERE Name = 'Rock');"
+    },
+    {
+        "question": "Which customers have more than 2 invoices?",
+        "query": "SELECT CustomerId FROM Invoice GROUP BY CustomerId HAVING COUNT(*) > 2;"
+    },
+    {
+        "question": "List all albums with more than 15 tracks.",
+        "query": "SELECT AlbumId FROM Track GROUP BY AlbumId HAVING COUNT(*) > 15;"
+    },
+    {
+        "question": "Find customers who live in cities starting with 'L'.",
+        "query": "SELECT FirstName, LastName FROM Customer WHERE City LIKE 'L%';"
+    }
+]
