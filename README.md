@@ -117,5 +117,5 @@ Chinook database
 **Raees Ahmed Faiz Mohammed Parkar**
 [GitHub](https://github.com/raeesp97)
 
-**Arnav Dhairyasheel Mohite**
+**Arnav  Dhairyasheel Mohite**
 [GitHub](https://github.com/ArnavMohite)
